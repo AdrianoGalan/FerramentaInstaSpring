@@ -5,10 +5,12 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import com.adriano.model.Categoria;
 import com.adriano.model.Hashtag;
-import com.adriano.repositotory.hashtagRepository;
+import com.adriano.repositotory.HashtagRepository;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,24 +25,34 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class HashtagController {
 
-    private final hashtagRepository rHas;
+    private final HashtagRepository rHas;
+    private final CategoriaController catControl;
 
     @GetMapping
     public List<Hashtag> list(){
         return rHas.findAll();
     }
+    
+    @DeleteMapping("/deletar/{idCategoria}")
+    public ResponseEntity<String> deletaHashtag(@PathVariable(value = "idCategoria") Long id_categoria){
+
+
+        this.rHas.deleteById(id_categoria);
+
+        return ResponseEntity.ok("ok");
+    }
 
     @PostMapping
-	public ResponseEntity<String> insertsetor(@Valid @RequestBody Hashtag h){
+	public ResponseEntity<String> insertHashtage(@Valid @RequestBody Hashtag h){
 		
-        String hash = h.getHash();
-        String categoria = h.getCategoria();
+        String hash = h.getNome();
+        Categoria categoria =  catControl.getByNome(h.getCategoria().getNome());
 
         String[] hashSeparado = hash.split(" ");
         for (String hashtag : hashSeparado) {
 
             Hashtag has = new Hashtag();
-            has.setHash(hashtag.trim());
+            has.setNome(hashtag.trim());
             has.setCategoria(categoria);
             rHas.save(has);           
         }
@@ -50,10 +62,10 @@ public class HashtagController {
 
 
     @GetMapping("/gerar/{categoria}")
-    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") String categoria){
+    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") Long id_categoria){
 
         
-        List<Hashtag> has = rHas.byCategoria(categoria);
+        List<Hashtag> has = rHas.byCategoria(id_categoria);
         String retorno = "";
 
         if(!has.isEmpty()){
@@ -61,15 +73,14 @@ public class HashtagController {
         int tamanho = has.size();
         Random gerador = new Random();
        
-       retorno = has.get(gerador.nextInt(tamanho)).getHash();
+       retorno = has.get(gerador.nextInt(tamanho)).getNome();
 
        for(int i = 0; i <  5; i++){
 
-           retorno = retorno + " " + has.get(gerador.nextInt(tamanho)).getHash();
+           retorno = retorno + " " + has.get(gerador.nextInt(tamanho)).getNome();
 
        }
     }
-        System.out.println(retorno);
         return ResponseEntity.ok(retorno);
     }
 

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-FerramentaIntagramApplication<ferramentaIntagram>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.adriano.FerramentaIntagramApplication",
+            "projectName": "ferramentaIntagram",
+            "args": ""
+        }
+    ]
+}

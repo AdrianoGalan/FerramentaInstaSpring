@@ -1,0 +1,1 @@
+docker run -e "ACCEPT_EULA=Y"  -e TZ=America/Sao_Paulo -e "SA_PASSWORD=P4ssw0rd"  -p 1433:1433 --name insta  -d mcr.microsoft.com/mssql/server:2019-CU5-ubuntu-18.04

@@ -5,13 +5,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
 
 @Data
 @Entity
-@NamedNativeQuery(name = "Hashtag.byCategoria", query = "SELECT id,hash,categoria FROM HASHTAG  WHERE categoria = ?1", 
+@NamedNativeQuery(name = "Hashtag.byCategoria", query = "SELECT id,nome,id_categoria FROM HASHTAG  WHERE id_categoria = ?1", 
 				resultClass = Hashtag.class)
 public class Hashtag {
     
@@ -20,8 +22,9 @@ public class Hashtag {
     private Long id;
 
     @Column(length = 100, unique = true, nullable = false)
-    private String hash;
+    private String nome;
 
-    @Column(length = 50, nullable = false)
-    private String categoria;
+    @OneToOne(targetEntity = Categoria.class)
+	@JoinColumn(name = "id_categoria")
+    private Categoria categoria;
 }
