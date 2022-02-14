@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import lombok.Data;
 
@@ -21,20 +23,26 @@ public class Perfil {
     @Column(length = 100, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 200, nullable = false)
+    @Column(length = 50, nullable = false)
     private String nome;
 
-    @Column(length = 200, nullable = false)
-    private String email;
+    @Column(length = 150, nullable = false)
+    private String sobreNome;
+
+    @Column(length = 150)
+    private String dispositivo;
 
     @Column
     private Date dataCriacao;
 
     @Column
-    private Date dataInicioTrabalho;
+    private Date dataCadastro;
 
     @Column
-    private String status;
+    private Date dataBloqueio;
+
+    @Column
+    private Date dataInicioTrabalho;
 
     @Column
     private int numeroSeguidor;
@@ -43,9 +51,14 @@ public class Perfil {
     private int numeroSeguindo;
 
     @Column
-    private Date dataBloqueio;
-
-    @Column
     private String genero;
+
+    @OneToOne(targetEntity = Email.class)
+	@JoinColumn(name = "id_email")
+    private Email email;
+
+    @OneToOne(targetEntity = Status.class)
+	@JoinColumn(name = "id_status")
+    private Status status;
     
 }
