@@ -46,7 +46,7 @@ public class HashtagController {
 	public ResponseEntity<String> insertHashtage(@Valid @RequestBody Hashtag h){
 		
         String hash = h.getNome();
-        Categoria categoria =  catControl.getByNome(h.getCategoria().getNome());
+         Categoria categoria =  catControl.getByNome(h.getCategoria().getNome());
 
         String[] hashSeparado = hash.split(" ");
         for (String hashtag : hashSeparado) {

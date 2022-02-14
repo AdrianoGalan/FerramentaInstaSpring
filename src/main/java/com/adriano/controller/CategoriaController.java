@@ -2,11 +2,15 @@ package com.adriano.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.adriano.model.Categoria;
 import com.adriano.repositotory.CategoriaRepository;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,14 +23,15 @@ public class CategoriaController {
 
     private final CategoriaRepository rCat;
 
-    public Categoria insertCategoria(  String nomeCategoria){
+ 
+
+    @PostMapping
+    public ResponseEntity<String> insertCategoria(@Valid @RequestBody Categoria cat){
 		
-        Categoria cat = new Categoria();
-        cat.setNome(nomeCategoria);
 
         this.rCat.save(cat);
 
-        return cat;
+        return ResponseEntity.ok("ok");
 
 	}
 
@@ -35,10 +40,6 @@ public class CategoriaController {
 
         Categoria cat = this.rCat.getByNome(nomeCategoria);
 
-        if(cat == null){
-
-            return this.insertCategoria(nomeCategoria);
-        }
         
         return cat;
 
