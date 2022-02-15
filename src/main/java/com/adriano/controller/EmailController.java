@@ -39,7 +39,7 @@ public class EmailController {
 
     @GetMapping
     public List<Email> list(){
-        return this.rEmail.findAll();
+        return this.rEmail.findByOrderByEmail();
     }
     
 }

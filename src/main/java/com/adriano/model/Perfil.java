@@ -24,6 +24,9 @@ public class Perfil {
     private String username;
 
     @Column(length = 50, nullable = false)
+    private String senha;
+
+    @Column(length = 50, nullable = false)
     private String nome;
 
     @Column(length = 150, nullable = false)
@@ -33,16 +36,16 @@ public class Perfil {
     private String dispositivo;
 
     @Column
-    private Date dataCriacao;
+    private String dataCriacao;
 
     @Column
-    private Date dataCadastro;
+    private String dataCadastro;
 
     @Column
-    private Date dataBloqueio;
+    private String dataBloqueio;
 
     @Column
-    private Date dataInicioTrabalho;
+    private String dataInicioTrabalho;
 
     @Column
     private int numeroSeguidor;
@@ -60,5 +63,7 @@ public class Perfil {
     @OneToOne(targetEntity = Status.class)
 	@JoinColumn(name = "id_status")
     private Status status;
+
+    
     
 }
