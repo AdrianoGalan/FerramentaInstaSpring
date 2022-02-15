@@ -34,7 +34,7 @@ public class HashtagController {
     }
     
     @DeleteMapping("/deletar/{idCategoria}")
-    public ResponseEntity<String> deletaHashtag(@PathVariable(value = "idCategoria") Long id_categoria){
+    public ResponseEntity<String> deletaHashtag(@PathVariable(value = "idCategoria") int id_categoria){
 
 
         this.rHas.deleteById(id_categoria);
@@ -62,7 +62,7 @@ public class HashtagController {
 
 
     @GetMapping("/gerar/{categoria}")
-    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") Long id_categoria){
+    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") int id_categoria){
 
         
         List<Hashtag> has = rHas.byCategoria(id_categoria);
