@@ -33,10 +33,11 @@ CREATE TABLE status(
 )
 GO
 
-CREATE  TABLE Perfil(
+CREATE TABLE Perfil(
 
     ID INT IDENTITY PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(100) NOT NULL,
     nome VARCHAR(50) NOT NULL,
     sobre_nome VARCHAR(150) NOT NULL,
     dispositivo varchar(100),
