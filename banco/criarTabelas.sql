@@ -58,3 +58,12 @@ CREATE TABLE Perfil(
     FOREIGN KEY(id_status)  REFERENCES status(ID)
 )
 GO
+
+CREATE TABLE nomes(
+
+    id int IDENTITY PRIMARY KEY,
+    nome VARCHAR(50) UNIQUE NOT NULL,
+    tipo char(1) not NULL 
+    CHECK(tipo = 'N' or tipo = 'S')
+)
+GO
