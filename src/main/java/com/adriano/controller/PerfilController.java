@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,28 +27,33 @@ public class PerfilController {
 
     private final PerfilRepository rPerfil;
 
- 
-
     @PostMapping
-    public ResponseEntity<String> insertPerfil(@Valid @RequestBody Perfil perfil){
-		
+    public ResponseEntity<String> insertPerfil(@Valid @RequestBody Perfil perfil) {
 
         this.rPerfil.save(perfil);
 
         return ResponseEntity.ok("ok");
 
-	}
+    }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<String> atualizarPerfil(@Valid @RequestBody Perfil perfil) {
+
+        this.rPerfil.save(perfil);
+
+        return ResponseEntity.ok("ok");
+
+    }
 
     @GetMapping("/{username}")
-    public Perfil getById(@PathVariable(value = "username") String username){
+    public Perfil getById(@PathVariable(value = "username") String username) {
 
         return this.rPerfil.getByUsername(username);
     }
-  
 
     @GetMapping
-    public List<Perfil> list(){
+    public List<Perfil> list() {
         return this.rPerfil.findAll();
     }
-    
+
 }

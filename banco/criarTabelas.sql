@@ -1,3 +1,6 @@
+CREATE DATABASE instagram
+GO
+
 USE instagram
 GO
 
