@@ -1,7 +1,5 @@
 package com.adriano.model;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -57,13 +55,11 @@ public class Perfil {
     private String genero;
 
     @OneToOne(targetEntity = Email.class)
-	@JoinColumn(name = "id_email")
+    @JoinColumn(name = "id_email")
     private Email email;
 
     @OneToOne(targetEntity = Status.class)
-	@JoinColumn(name = "id_status")
+    @JoinColumn(name = "id_status")
     private Status status;
 
-    
-    
 }

@@ -85,3 +85,10 @@ CREATE TABLE sobrenomes(
     sobrenome VARCHAR(50) UNIQUE NOT NULL
 )
 GO
+
+CREATE TABLE biografia(
+
+    id int IDENTITY PRIMARY KEY,
+    bio VARCHAR(100) UNIQUE NOT NULL
+)
+GO
