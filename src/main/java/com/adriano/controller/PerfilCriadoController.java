@@ -98,7 +98,7 @@ public class PerfilCriadoController {
         int mes = gerador.nextInt(11) + 1;
         int ano = gerador.nextInt(20) + 1980;
 
-        return dia + "/" + mes + "/" + ano;
+        return mes + "/" + dia + "/" + ano;
     }
 
     private String dataAtual() {
