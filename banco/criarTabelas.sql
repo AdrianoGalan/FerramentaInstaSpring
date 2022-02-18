@@ -1,4 +1,14 @@
-CREATE DATABASE instagram
+-- Create a new database called 'DatabaseName'
+-- Connect to the 'master' database to run this snippet
+USE master
+GO
+-- Create the new database if it does not exist already
+IF NOT EXISTS (
+    SELECT name
+        FROM sys.databases
+        WHERE name = N'INSTAGRAM'
+)
+CREATE DATABASE INSTAGRAM
 GO
 
 USE instagram
@@ -50,10 +60,11 @@ CREATE TABLE Perfil(
     data_inicio_trabalho DATE,
     numero_seguidor INT,
     numero_seguindo INT,
-    genero CHAR(1),
+    genero CHAR(1) CHECK(genero = 'F' or genero = 'M'),
     id_email int,
-    id_status int,
+    id_status int
 
+    
     FOREIGN KEY(id_email)  REFERENCES email(ID),
     FOREIGN KEY(id_status)  REFERENCES status(ID)
 )
@@ -63,7 +74,14 @@ CREATE TABLE nomes(
 
     id int IDENTITY PRIMARY KEY,
     nome VARCHAR(50) UNIQUE NOT NULL,
-    tipo char(1) not NULL 
-    CHECK(tipo = 'N' or tipo = 'S')
+    genero char(1) not NULL 
+    CHECK(genero = 'F' or genero = 'M')
+)
+GO
+
+CREATE TABLE sobrenomes(
+
+    id int IDENTITY PRIMARY KEY,
+    sobrenome VARCHAR(50) UNIQUE NOT NULL
 )
 GO
