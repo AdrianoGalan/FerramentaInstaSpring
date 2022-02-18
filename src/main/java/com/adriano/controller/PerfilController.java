@@ -30,6 +30,8 @@ public class PerfilController {
     @PostMapping
     public ResponseEntity<String> insertPerfil(@Valid @RequestBody Perfil perfil) {
 
+        System.out.println(perfil + "9999999999999999999999999");
+
         this.rPerfil.save(perfil);
 
         return ResponseEntity.ok("ok");

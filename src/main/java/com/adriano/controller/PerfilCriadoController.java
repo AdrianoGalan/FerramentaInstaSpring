@@ -38,17 +38,19 @@ public class PerfilCriadoController {
     public PerfilCriado criar(@PathVariable(value = "genero") String genero) {
 
         Random gerador = new Random();
-
         List<Nomes> nomes = rNome.findByGenero(genero);
-
         PerfilCriado perfil = new PerfilCriado();
+        String[] username;
 
         perfil.setNome(nomes.get(gerador.nextInt(nomes.size())).getNome());
         perfil.setSobrenome(gerarSobrenome());
         perfil.setDataAniver(gerarData());
         perfil.setDataCriacao(dataAtual());
         perfil.setBio(gerarBio());
+        perfil.setSenha("Senha"+perfil.getNome());
        
+        username = perfil.getSobrenome().split(" ");
+        perfil.setUsername(username[1] + perfil.getNome()+username[0] );
 
         return perfil;
     }
@@ -92,7 +94,7 @@ public class PerfilCriadoController {
 
         Random gerador = new Random();
 
-        int dia = gerador.nextInt(28);
+        int dia = gerador.nextInt(27) + 1;
         int mes = gerador.nextInt(11) + 1;
         int ano = gerador.nextInt(20) + 1980;
 
@@ -102,7 +104,7 @@ public class PerfilCriadoController {
     private String dataAtual() {
 
         Date data = new Date();
-        SimpleDateFormat formatador = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatador = new SimpleDateFormat("MM/dd/yyyy");
 
         return formatador.format(data);
 
