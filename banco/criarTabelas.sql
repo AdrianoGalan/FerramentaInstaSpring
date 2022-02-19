@@ -17,15 +17,15 @@ GO
 CREATE TABLE categoria(
 
     id int IDENTITY PRIMARY KEY,
-    nome VARCHAR(50) UNIQUE
+    nome VARCHAR(50) UNIQUE  NOT NULL
 )
 GO
 
 CREATE TABLE hashtag(
 
     id int IDENTITY PRIMARY KEY,
-    nome VARCHAR(100) UNIQUE,
-    id_categoria int
+    nome VARCHAR(100) UNIQUE NOT NULL,
+    id_categoria int  NOT NULL
 
     FOREIGN KEY(id_categoria)  REFERENCES categoria(ID)
 
