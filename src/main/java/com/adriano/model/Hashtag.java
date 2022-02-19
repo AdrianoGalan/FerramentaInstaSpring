@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@NamedNativeQuery(name = "Hashtag.byCategoria", query = "SELECT id,nome,id_categoria FROM HASHTAG  WHERE id_categoria = ?1", 
+@NamedNativeQuery(name = "Hashtag.byCategoria", query = "SELECT id,nome,id_categoria FROM hashtag  WHERE id_categoria = ?1", 
 				resultClass = Hashtag.class)
 public class Hashtag {
     
