@@ -61,6 +61,7 @@ CREATE TABLE Perfil(
     numero_seguidor INT,
     numero_seguindo INT,
     genero CHAR(1) CHECK(genero = 'F' or genero = 'M'),
+    qualidade CHAR(1) CHECK(qualidade = 'B' or qualidade = 'M' or qualidade = 'A'),
     id_email int,
     id_status int
 

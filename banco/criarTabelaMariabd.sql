@@ -44,11 +44,15 @@ CREATE TABLE perfil(
     numero_seguidor INT,
     numero_seguindo INT,
     genero CHAR(1),
+    qualidade CHAR(1),
     id_email int,
     id_status int,
 
     CONSTRAINT `valida_genero`
         CHECK(genero = 'F' or genero = 'M'),
+
+    CONSTRAINT `validar_qualidade`
+        CHECK(qualidade = 'B' or qualidade = 'M' or qualidade = 'A'),
 
     CONSTRAINT `fk_email_perfil`
         FOREIGN KEY(id_email)  REFERENCES email(ID),
