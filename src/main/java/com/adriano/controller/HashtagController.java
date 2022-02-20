@@ -29,13 +29,12 @@ public class HashtagController {
     private final CategoriaController catControl;
 
     @GetMapping
-    public List<Hashtag> list(){
+    public List<Hashtag> list() {
         return rHas.findAll();
     }
-    
-    @DeleteMapping("/deletar/{idCategoria}")
-    public ResponseEntity<String> deletaHashtag(@PathVariable(value = "idCategoria") int id_categoria){
 
+    @DeleteMapping("/deletar/{idCategoria}")
+    public ResponseEntity<String> deletaHashtag(@PathVariable(value = "idCategoria") int id_categoria) {
 
         this.rHas.deleteById(id_categoria);
 
@@ -43,48 +42,47 @@ public class HashtagController {
     }
 
     @PostMapping
-	public ResponseEntity<String> insertHashtage(@Valid @RequestBody Hashtag h){
-		
+    public ResponseEntity<String> insertHashtage(@Valid @RequestBody Hashtag h) {
+
         String hash = h.getNome();
-         Categoria categoria =  catControl.getByNome(h.getCategoria().getNome());
+        Categoria categoria = catControl.getByNome(h.getCategoria().getNome());
 
         String[] hashSeparado = hash.split(" ");
         for (String hashtag : hashSeparado) {
+            try {
+                Hashtag has = new Hashtag();
+                has.setNome(hashtag.trim());
+                has.setCategoria(categoria);
+                rHas.save(has);
+            } catch (Exception e) {
+                System.err.println("Erro ao salvar " + e.toString());
+            }
 
-            Hashtag has = new Hashtag();
-            has.setNome(hashtag.trim());
-            has.setCategoria(categoria);
-            rHas.save(has);           
         }
-		return ResponseEntity.ok("Hashtag salva");
+        return ResponseEntity.ok("Hashtag salva");
 
-	}
-
+    }
 
     @GetMapping("/gerar/{categoria}")
-    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") int id_categoria){
+    public ResponseEntity<String> gerar(@PathVariable(value = "categoria") int id_categoria) {
 
-        
         List<Hashtag> has = rHas.byCategoria(id_categoria);
         String retorno = "";
 
-        if(!has.isEmpty()){
-        
-        int tamanho = has.size();
-        Random gerador = new Random();
-       
-       retorno = has.get(gerador.nextInt(tamanho)).getNome();
+        if (!has.isEmpty()) {
 
-       for(int i = 0; i <  5; i++){
+            int tamanho = has.size();
+            Random gerador = new Random();
 
-           retorno = retorno + " " + has.get(gerador.nextInt(tamanho)).getNome();
+            retorno = has.get(gerador.nextInt(tamanho)).getNome();
 
-       }
-    }
+            for (int i = 0; i < 5; i++) {
+
+                retorno = retorno + " " + has.get(gerador.nextInt(tamanho)).getNome();
+
+            }
+        }
         return ResponseEntity.ok(retorno);
     }
 
-
-    
-    
 }

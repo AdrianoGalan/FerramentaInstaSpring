@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import com.adriano.model.Email;
 import com.adriano.model.Perfil;
+import com.adriano.model.Status;
 import com.adriano.repositotory.EmailRepository;
 import com.adriano.repositotory.PerfilRepository;
 
@@ -54,7 +55,21 @@ public class PerfilController {
 
     @GetMapping
     public List<Perfil> list() {
-        return this.rPerfil.findAll();
+        return this.rPerfil.findByOrderByNumeroSeguidorDesc();
+    }
+
+    @GetMapping("/status/{idStatus}")
+    public List<Perfil> listByStatus(@PathVariable(value = "idStatus") int idStatus){
+
+
+        return this.rPerfil.findByStatusId(idStatus);
+    }
+
+    @GetMapping("/status/bloqueado/{idStatus}")
+    public List<Perfil> listDifBloqueado(@PathVariable(value = "idStatus") int idStatus){
+
+
+        return this.rPerfil.findByStatusDIfBlo(idStatus);
     }
 
 }

@@ -1,3 +1,18 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "dcrhg4kh56j13bnu.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "instaaaa",
+            "username": "wj3zpf3id4a7z41v",
+            "password": "y41x0pwdzunr8dg5",
+            "database": "cbdddyhq83nqtuyp"
+        }
+    ]
 }
