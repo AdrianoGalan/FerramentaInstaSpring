@@ -98,14 +98,13 @@ public class PerfilCriadoController {
         int mes = gerador.nextInt(11) + 1;
         int ano = gerador.nextInt(20) + 1980;
 
-        return mes + "/" + dia + "/" + ano;
+        return ano + "-" + mes + "-" + dia;
     }
 
     private String dataAtual() {
 
         Date data = new Date();
-        SimpleDateFormat formatador = new SimpleDateFormat("MM/dd/yyyy");
-
+        SimpleDateFormat formatador = new SimpleDateFormat("yyyy-MM-dd");
         return formatador.format(data);
 
     }

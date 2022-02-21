@@ -31,7 +31,6 @@ public class PerfilController {
     @PostMapping
     public ResponseEntity<String> insertPerfil(@Valid @RequestBody Perfil perfil) {
 
-    
         this.rPerfil.save(perfil);
 
         return ResponseEntity.ok("ok");
@@ -59,15 +58,13 @@ public class PerfilController {
     }
 
     @GetMapping("/status/{idStatus}")
-    public List<Perfil> listByStatus(@PathVariable(value = "idStatus") int idStatus){
-
+    public List<Perfil> listByStatus(@PathVariable(value = "idStatus") int idStatus) {
 
         return this.rPerfil.findByStatusId(idStatus);
     }
 
     @GetMapping("/status/bloqueado/{idStatus}")
-    public List<Perfil> listDifBloqueado(@PathVariable(value = "idStatus") int idStatus){
-
+    public List<Perfil> listDifBloqueado(@PathVariable(value = "idStatus") int idStatus) {
 
         return this.rPerfil.findByStatusDIfBlo(idStatus);
     }

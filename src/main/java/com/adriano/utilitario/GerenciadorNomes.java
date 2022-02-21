@@ -24,7 +24,7 @@ import lombok.Cleanup;
 @RestController
 @RequestMapping("/api/nome/banco")
 @AllArgsConstructor
-public class gerenciadorNomes {
+public class GerenciadorNomes {
 
 
     private NomeRepository rNome;

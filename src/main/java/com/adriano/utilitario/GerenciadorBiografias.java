@@ -26,7 +26,7 @@ import lombok.Cleanup;
 @RestController
 @RequestMapping("/api/biografia/banco")
 @AllArgsConstructor
-public class gerenciadorBiografias {
+public class GerenciadorBiografias {
 
 
     private BiografiaRepository rBio;
