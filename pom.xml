@@ -46,6 +46,7 @@
 			<optional>true</optional>
 		</dependency>
 
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -65,6 +66,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.playwright</groupId>
+			<artifactId>playwright</artifactId>
+			<version>1.17.1</version>
+		</dependency>
+	
 	</dependencies>
 
 	<build>
