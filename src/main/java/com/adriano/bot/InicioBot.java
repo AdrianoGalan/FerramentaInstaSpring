@@ -7,6 +7,8 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/bot")
 @AllArgsConstructor
 public class InicioBot {
+
+    private static Logger log = LoggerFactory.getLogger(InicioBot.class);
 
     @GetMapping("/inicia")
     public ResponseEntity<String> iniciaBot() {
@@ -42,6 +46,8 @@ public class InicioBot {
                     .setGeolocation(-23.558934, -46.627823)
                     .setTimezoneId("America/Sao_Paulo"));
 
+            
+            log.info("Inicia Robo");
             // Open new page
             Page page = context.newPage();
 
@@ -54,11 +60,14 @@ public class InicioBot {
             page.waitForTimeout(5000);
 
             if (page.title().equalsIgnoreCase("Instagram")) {
-
+                log.info("inicia login");
                 if (ib.fazerLogin(page, perfil)) {
 
+                    page.pause();
+                    log.info("Assiste Stores");
                     ib.assistirStores(page, 1);
 
+                    log.info("saindo");
                     if(ib.sair(page, perfil)){
                         page.close();
                     }
@@ -70,4 +79,5 @@ public class InicioBot {
             return ResponseEntity.ok("ok");
         }
     }
+
 }
