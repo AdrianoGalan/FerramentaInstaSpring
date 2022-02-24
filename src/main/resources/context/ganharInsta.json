@@ -1,0 +1,68 @@
+{
+    "cookies": [
+        {
+            "sameSite": "Lax",
+            "name": "PHPSESSID",
+            "value": "e3hu3om932tup41474tqvud1k6",
+            "domain": ".ganharnoinsta.com",
+            "path": "/",
+            "expires": 1648266671.751872,
+            "httpOnly": false,
+            "secure": false
+        },
+        {
+            "sameSite": "Lax",
+            "name": "_ga",
+            "value": "GA1.2.91985829.1645674147",
+            "domain": ".ganharnoinsta.com",
+            "path": "/",
+            "expires": 1708746672,
+            "httpOnly": false,
+            "secure": false
+        },
+        {
+            "sameSite": "Lax",
+            "name": "_gid",
+            "value": "GA1.2.174418800.1645674147",
+            "domain": ".ganharnoinsta.com",
+            "path": "/",
+            "expires": 1645761072,
+            "httpOnly": false,
+            "secure": false
+        },
+        {
+            "sameSite": "Lax",
+            "name": "_gat_gtag_UA_90889597_12",
+            "value": "1",
+            "domain": ".ganharnoinsta.com",
+            "path": "/",
+            "expires": 1645674718,
+            "httpOnly": false,
+            "secure": false
+        }
+    ],
+    "origins": [
+        {
+            "origin": "https://www.ganharnoinsta.com",
+            "localStorage": [
+                {
+                    "name": "__wpfvdk",
+                    "value": "1645674672546"
+                },
+                {
+                    "name": "_grecaptcha",
+                    "value": "09AKRA80_F06cMbl5amRnMKlIvf5eUqMxsTi_yWmbqE4jxZtjMA7WXeGCwCOjHjE0jDwY6O_FbnyT_XgeQdQ1Aa4NLjQ"
+                }
+            ]
+        },
+        {
+            "origin": "https://www.google.com",
+            "localStorage": [
+                {
+                    "name": "rc::a",
+                    "value": "MWJ3cjZtYTF2ejRwd3Y="
+                }
+            ]
+        }
+    ]
+}

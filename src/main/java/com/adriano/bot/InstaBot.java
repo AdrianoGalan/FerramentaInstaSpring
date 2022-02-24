@@ -80,7 +80,7 @@ public class InstaBot {
                 // Click div[role="button"] >> :nth-match(button, 4)
                 page.click("div[role=\"button\"] >> :nth-match(button, 4)");
                 aux = aux + 10000;
-                pausa(page, 10, 11);
+                pausa(page, 2, 3);
 
             }
 
