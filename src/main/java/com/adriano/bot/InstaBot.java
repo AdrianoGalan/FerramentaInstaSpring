@@ -1,6 +1,7 @@
 package com.adriano.bot;
 
 import java.util.Random;
+import org.slf4j.Logger;
 
 import com.adriano.model.Perfil;
 import com.microsoft.playwright.Page;
@@ -72,7 +73,7 @@ public class InstaBot {
             page.click("div[role=\"button\"]", new Page.ClickOptions()
                     .setPosition(2, 6));
 
-            this.pausa(page, 2, 3);
+            this.pausa(page, 9, 11);
 
             while (aux < tempo) {
 
@@ -144,6 +145,48 @@ public class InstaBot {
         return true;
     }
 
+    public Perfil verificaPerfil(Page page, String usernanme, Logger log ){
+
+        Perfil perfil = new Perfil();
+
+        page.navigate("http://www.instagram.com");
+
+        this.pausa(page, 1, 3);
+       
+        page.navigate("https://www.instagram.com/" + usernanme);
+
+        this.pausa(page, 1, 3);
+
+        if (page.title().contains(usernanme)) {
+
+            try {
+                String[] seguidor = page.innerText("text=seguidor").split("\\n");
+                perfil.setNumeroSeguidor(Integer.parseInt(seguidor[0]));
+
+                String[] seguindo = page.innerText("text=seguindo").split("\\n");
+                perfil.setNumeroSeguindo(Integer.parseInt(seguindo[0]));
+
+              
+            } catch (Exception e) {
+                System.err.println(e);
+                perfil.setId(-1);
+                page.navigate("https://www.instagram.com");
+                return perfil;
+            }
+            
+            page.navigate("https://www.instagram.com");
+            return perfil;
+            
+        }else{
+
+            page.navigate("https://www.instagram.com");
+            
+            return null;
+        }
+
+        
+
+    }
     private boolean pausa(Page page, int minimo, int maximo) {
 
         minimo = minimo * 1000;
