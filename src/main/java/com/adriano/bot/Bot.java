@@ -11,6 +11,7 @@ import com.adriano.repositotory.PerfilRepository;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
@@ -207,7 +208,7 @@ public class Bot {
 
             try (Playwright playwright = Playwright.create()) {
                 Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                        .setHeadless(false).setSlowMo(200));
+                        .setHeadless(false).setSlowMo(700));
 
                 BrowserContext context = browser.newContext(new Browser.NewContextOptions()
                         .setStorageStatePath(
@@ -227,8 +228,7 @@ public class Bot {
 
                 page.navigate("http://www.instagram.com");
 
-                // page.pause();
-
+             
                 // começa aki cod de testes
 
                 ib.pausa(page, 3, 5);
@@ -244,18 +244,16 @@ public class Bot {
                 ib.pausa(page, 3, 5);
 
                 // Click [aria-label="Nova publicação"]
-                //page.click("[aria-label=\"Nova publicação\"]");
+                // page.click("[aria-label=\"Nova publicação\"]");
 
                 System.err.println("testa postar");
 
-                // Upload 1207078.jpg
-                // page.waitForNavigation(new
-                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/style/"),
-                // () ->
-                page.waitForNavigation(() -> {
-                    page.setInputFiles("[data-testid=\"new-post-button\"]", Paths.get("/home/deca/Documentos/instagram/imagem/1090149.jpg"));
-                });
+                FileChooser fileChooser = page.waitForFileChooser(() -> {
+                    page.click("[aria-label=\"Nova publicação\"]");
+                  });
+                  fileChooser.setFiles(Paths.get("/home/deca/Documentos/instagram/imagem/1207076.jpg"));
 
+              
                 ib.pausa(page, 3, 5);
 
                 // Click text=Avançar
@@ -273,10 +271,8 @@ public class Bot {
 
                 ib.pausa(page, 3, 5);
 
-
                 // Fill [aria-label="Escreva uma legenda..."]
                 page.fill("[aria-label=\"Escreva uma legenda...\"]", "#natureza #amor #coisalinda");
-
 
                 ib.pausa(page, 3, 5);
 
@@ -287,9 +283,7 @@ public class Bot {
                     page.click("text=Compartilhar");
                 });
 
-
                 page.pause();
-
 
                 // final cod teste
 

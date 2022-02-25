@@ -1,10 +1,12 @@
 package com.adriano.bot;
 
+import java.nio.file.Paths;
 import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adriano.model.Perfil;
+import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Page;
 
 public class InstaBot {
@@ -40,7 +42,7 @@ public class InstaBot {
 
             if (this.verificaBloqueio(page)) {
 
-                log.error("Perfil "+ perfil.getUsername()+" Bloqueado");
+                log.error("Perfil " + perfil.getUsername() + " Bloqueado");
                 return false;
             }
 
@@ -49,7 +51,7 @@ public class InstaBot {
                 page.click("text=Agora não");
 
                 this.pausa(page, 2, 5);
-                
+
                 log.info("Login efetuado");
                 return true;
             }
@@ -79,7 +81,7 @@ public class InstaBot {
 
         tempo = tempo * 60000;
         int aux = 0;
-        String titulo= "";
+        String titulo = "";
 
         try {
 
@@ -87,24 +89,20 @@ public class InstaBot {
             page.click("div[role=\"button\"]", new Page.ClickOptions()
                     .setPosition(2, 6));
 
-            
-
             this.pausa(page, 2, 4);
 
             while (aux < tempo) {
 
                 titulo = page.title();
 
-                if(titulo.contains("Sto")){
-                // avançar stores
-                // Click div[role="button"] >> :nth-match(button, 4)
-                page.click("div[role=\"button\"] >> :nth-match(button, 4)");
+                if (titulo.contains("Sto")) {
+                    // avançar stores
+                    // Click div[role="button"] >> :nth-match(button, 4)
+                    page.click("div[role=\"button\"] >> :nth-match(button, 4)");
 
                 }
                 aux = aux + 10000;
                 pausa(page, 9, 11);
-
-
 
             }
 
@@ -170,49 +168,98 @@ public class InstaBot {
         return true;
     }
 
-    public Perfil verificaPerfil(Page page, String usernanme){
+    public Perfil verificaPerfil(Page page, String usernanme) {
 
         Perfil perfil = new Perfil();
 
-        page.navigate("http://www.instagram.com");
+        try {
+            page.navigate("http://www.instagram.com");
 
-        this.pausa(page, 1, 3);
-       
-        page.navigate("https://www.instagram.com/" + usernanme);
+            this.pausa(page, 1, 3);
 
-        this.pausa(page, 1, 3);
+            page.navigate("https://www.instagram.com/" + usernanme);
 
-        if (page.title().contains(usernanme)) {
+            this.pausa(page, 1, 3);
 
-            try {
+            if (page.title().contains(usernanme)) {
+
                 String[] seguidor = page.innerText("text=seguidor").split("\\n");
                 perfil.setNumeroSeguidor(Integer.parseInt(seguidor[0]));
 
                 String[] seguindo = page.innerText("text=seguindo").split("\\n");
                 perfil.setNumeroSeguindo(Integer.parseInt(seguindo[0]));
 
-              
-            } catch (Exception e) {
-                System.err.println(e);
-                perfil.setId(-1);
                 page.navigate("https://www.instagram.com");
                 return perfil;
+
+            } else {
+
+                page.navigate("https://www.instagram.com");
+
+                return null;
             }
-            
+
+        } catch (Exception e) {
+            log.error("Erro ao verificar ", e);
+            perfil.setId(-1);
             page.navigate("https://www.instagram.com");
             return perfil;
-            
-        }else{
-
-            page.navigate("https://www.instagram.com");
-            
-            return null;
         }
 
-        
-
     }
-    
+
+    public boolean postar(Page page, Perfil perfil) {
+
+        page.navigate("https://www.instagram.com/" + perfil.getUsername());
+
+        pausa(page, 3, 5);
+
+        try {
+
+            FileChooser fileChooser = page.waitForFileChooser(() -> {
+                page.click("[aria-label=\"Nova publicação\"]");
+            });
+            fileChooser.setFiles(Paths.get("/home/deca/Documentos/instagram/imagem/1207076.jpg"));
+
+            pausa(page, 3, 5);
+
+            // Click text=Avançar
+            // page.waitForNavigation(new
+            // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/details/"),
+            // () ->
+            page.waitForNavigation(() -> {
+                page.click("text=Avançar");
+            });
+
+            pausa(page, 3, 5);
+
+            // Click [aria-label="Escreva uma legenda..."]
+            page.click("[aria-label=\"Escreva uma legenda...\"]");
+
+            pausa(page, 3, 5);
+
+            // Fill [aria-label="Escreva uma legenda..."]
+            page.fill("[aria-label=\"Escreva uma legenda...\"]", "#natureza #amor #coisalinda");
+
+            pausa(page, 3, 5);
+
+            // Click text=Compartilhar
+            // page.waitForNavigation(new
+            // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
+            page.waitForNavigation(() -> {
+                page.click("text=Compartilhar");
+            });
+
+            return true;
+
+        } catch (Exception e) {
+            log.error("Erro ao verificar ", e);
+            page.navigate("https://www.instagram.com");
+            
+            return false;
+        }
+    }
+
     public boolean pausa(Page page, int minimo, int maximo) {
 
         minimo = minimo * 1000;
