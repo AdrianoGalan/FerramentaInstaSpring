@@ -2,14 +2,19 @@ package com.adriano.bot;
 
 import java.util.Random;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adriano.model.Perfil;
 import com.microsoft.playwright.Page;
 
 public class InstaBot {
 
+    private static Logger log = LoggerFactory.getLogger(InstaBot.class);
+
     public boolean fazerLogin(Page page, Perfil perfil) {
         try {
+
+            this.log.info("Inicia Login perfil: " + perfil.getUsername());
 
             page.click("[aria-label=\"Telefone, nome de usuário ou email\"]");
 
@@ -34,6 +39,8 @@ public class InstaBot {
             this.pausa(page, 2, 5);
 
             if (this.verificaBloqueio(page)) {
+
+                log.error("Perfil "+ perfil.getUsername()+" Bloqueado");
                 return false;
             }
 
@@ -42,7 +49,8 @@ public class InstaBot {
                 page.click("text=Agora não");
 
                 this.pausa(page, 2, 5);
-
+                
+                log.info("Login efetuado");
                 return true;
             }
 
@@ -55,17 +63,23 @@ public class InstaBot {
 
             this.pausa(page, 2, 5);
 
+            log.info("Login efetuado");
             return true;
 
         } catch (Exception e) {
+
+            log.error("Erro ao logar", e);
             return false;
         }
     }
 
     public boolean assistirStores(Page page, int tempo) {
 
+        log.info("Assistir Stores por " + tempo + " minutos");
+
         tempo = tempo * 60000;
         int aux = 0;
+        String titulo= "";
 
         try {
 
@@ -73,15 +87,24 @@ public class InstaBot {
             page.click("div[role=\"button\"]", new Page.ClickOptions()
                     .setPosition(2, 6));
 
-            this.pausa(page, 9, 11);
+            
+
+            this.pausa(page, 2, 4);
 
             while (aux < tempo) {
 
+                titulo = page.title();
+
+                if(titulo.contains("Sto")){
                 // avançar stores
                 // Click div[role="button"] >> :nth-match(button, 4)
                 page.click("div[role=\"button\"] >> :nth-match(button, 4)");
+
+                }
                 aux = aux + 10000;
-                pausa(page, 2, 3);
+                pausa(page, 9, 11);
+
+
 
             }
 
@@ -91,6 +114,8 @@ public class InstaBot {
             return true;
 
         } catch (Exception e) {
+
+            log.error("Erro ao assistir stores ", e);
             return false;
         }
 
@@ -145,7 +170,7 @@ public class InstaBot {
         return true;
     }
 
-    public Perfil verificaPerfil(Page page, String usernanme, Logger log ){
+    public Perfil verificaPerfil(Page page, String usernanme){
 
         Perfil perfil = new Perfil();
 
@@ -187,7 +212,8 @@ public class InstaBot {
         
 
     }
-    private boolean pausa(Page page, int minimo, int maximo) {
+    
+    public boolean pausa(Page page, int minimo, int maximo) {
 
         minimo = minimo * 1000;
         maximo = maximo * 1000;

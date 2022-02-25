@@ -30,36 +30,11 @@ public class Bot {
         if (conta != null) {
             perfis.remove(conta);
 
-            File file = new File("src/main/resources/context/" + conta.getUsername() + ".json");
+            File file = new File("context/" + conta.getUsername() + ".json");
 
             if (!file.isFile()) {
-                try (Playwright playwright = Playwright.create()) {
-                    Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                            .setHeadless(false).setSlowMo(500));
 
-                    BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-                            .setUserAgent(
-                                    "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
-                            .setIsMobile(true)
-                            .setViewportSize(375, 650)
-                            .setHasTouch(true)
-                            .setLocale("pt-BR")
-                            .setGeolocation(-23.558934, -46.627823)
-                            .setTimezoneId("America/Sao_Paulo"));
-
-                    log.info("Inicia Robo");
-
-                    Page page = context.newPage();
-
-                    if (ib.fazerLogin(page, conta)) {
-                        context = browser.newContext(
-                                new Browser.NewContextOptions().setStorageStatePath(
-                                        Paths.get("src/main/resources/context/" + conta.getUsername() + ".json")));
-                    }
-
-                    page.close();
-
-                }
+                this.salvaContext(conta);
 
             }
 
@@ -69,7 +44,7 @@ public class Bot {
 
                 BrowserContext context = browser.newContext(new Browser.NewContextOptions()
                         .setStorageStatePath(
-                                Paths.get("src/main/resources/context/" + conta.getUsername() + ".json"))
+                                Paths.get("context/" + conta.getUsername() + ".json"))
                         .setUserAgent(
                                 "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
                         .setIsMobile(true)
@@ -85,16 +60,16 @@ public class Bot {
 
                 page.navigate("http://www.instagram.com");
 
-                for (int i = perfis.size() - 3; i < perfis.size(); i++) {
+                for (int i = 0; i < perfis.size(); i++) {
                     Perfil pr = new Perfil();
-                    pr = ib.verificaPerfil(page, perfis.get(i).getUsername(), log);
+                    pr = ib.verificaPerfil(page, perfis.get(i).getUsername());
                     ib.assistirStores(page, 1);
 
-                    if(pr == null){
+                    if (pr == null) {
 
                         perfis.get(i).setStatus(statusBloqueado);
-                        
-                    }else if(pr.getId() != -1){
+
+                    } else if (pr.getId() != -1) {
                         perfis.get(i).setNumeroSeguidor(pr.getNumeroSeguidor());
                         perfis.get(i).setNumeroSeguindo(pr.getNumeroSeguindo());
                     }
@@ -147,7 +122,7 @@ public class Bot {
 
                     // salvar context
                     context.storageState(new BrowserContext.StorageStateOptions()
-                            .setPath(Paths.get("src/main/resources/context/" + perfil.getUsername() + ".json")));
+                            .setPath(Paths.get("context/" + perfil.getUsername() + ".json")));
 
                     log.info("Assiste Stores");
                     ib.assistirStores(page, 1);
@@ -165,19 +140,17 @@ public class Bot {
         }
     }
 
-    public void salvaContext() {
+    public void salvaContext(Perfil perfil) {
 
         InstaBot ib = new InstaBot();
-
-        Perfil perfil = new Perfil();
-        perfil.setUsername("torquatopaulomessias");
-        perfil.setSenha("jdh2WbvqC2W5Pqd");
 
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(false).setSlowMo(200));
 
             BrowserContext context = browser.newContext(new Browser.NewContextOptions()
+                    .setStorageStatePath(
+                            Paths.get("context/ganharInsta.json"))
                     .setUserAgent(
                             "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
                     .setIsMobile(true)
@@ -187,7 +160,7 @@ public class Bot {
                     .setGeolocation(-23.558934, -46.627823)
                     .setTimezoneId("America/Sao_Paulo"));
 
-            log.info("Inicia Robo");
+            log.info("Inicia Salvar Constext");
             // Open new page
             Page page = context.newPage();
 
@@ -206,7 +179,7 @@ public class Bot {
                     page.waitForTimeout(500);
 
                     context.storageState(new BrowserContext.StorageStateOptions()
-                            .setPath(Paths.get("src/main/resources/context/" + perfil.getUsername() + ".json")));
+                            .setPath(Paths.get("context/" + perfil.getUsername() + ".json")));
 
                     page.waitForTimeout(500);
 
@@ -220,46 +193,108 @@ public class Bot {
         }
     }
 
-    public void teste() {
+    public void teste(Perfil perfil) {
 
-        Perfil perfil = new Perfil();
-        perfil.setUsername("fariasneis");
-        InstaBot ib = new InstaBot();
+        if (perfil != null) {
 
-        try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setHeadless(false).setSlowMo(500));
+            File file = new File("context/" + perfil.getUsername() + ".json");
 
-            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
-                    .setStorageStatePath(
-                            Paths.get("src/main/resources/context/torquatopaulomessias.json"))
-                    .setUserAgent(
-                            "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
-                    .setIsMobile(true)
-                    .setViewportSize(375, 650)
-                    .setHasTouch(true)
-                    .setLocale("pt-BR")
-                    .setGeolocation(-23.558934, -46.627823)
-                    .setTimezoneId("America/Sao_Paulo"));
+            if (!file.isFile()) {
 
-            log.info("Inicia Robo");
-            // Open new page
-            Page page = context.newPage();
+                this.salvaContext(perfil);
 
-            Perfil rp = ib.verificaPerfil(page, "vianatatianebrito", log);
-
-            if (rp == null) {
-                System.err.println("perfil bloqueado");
-            } else if (rp.getId() == -1) {
-                System.err.println("Erro na execução");
-            } else {
-                perfil.setNumeroSeguidor(rp.getNumeroSeguidor());
-                perfil.setNumeroSeguindo(rp.getNumeroSeguindo());
-
-                System.err.println(perfil);
             }
 
-            // page.pause();
+            try (Playwright playwright = Playwright.create()) {
+                Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                        .setHeadless(false).setSlowMo(200));
+
+                BrowserContext context = browser.newContext(new Browser.NewContextOptions()
+                        .setStorageStatePath(
+                                Paths.get("context/" + perfil.getUsername() + ".json"))
+                        .setUserAgent(
+                                "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
+                        .setIsMobile(true)
+                        .setViewportSize(375, 650)
+                        .setHasTouch(true)
+                        .setLocale("pt-BR")
+                        .setGeolocation(-23.558934, -46.627823)
+                        .setTimezoneId("America/Sao_Paulo"));
+
+                log.info("Inicia Robo");
+                // Open new page
+                Page page = context.newPage();
+
+                page.navigate("http://www.instagram.com");
+
+                // page.pause();
+
+                // começa aki cod de testes
+
+                ib.pausa(page, 3, 5);
+
+                page.navigate("https://www.instagram.com/" + perfil.getUsername());
+
+                ib.pausa(page, 3, 5);
+
+                // Click [data-testid="mobile-nav-logged-in"] [data-testid="user-avatar"]
+                page.click("[data-testid=\"mobile-nav-logged-in\"] [data-testid=\"user-avatar\"]");
+                // assert page.url().equals("https://www.instagram.com/rpereiracastro/");
+
+                ib.pausa(page, 3, 5);
+
+                // Click [aria-label="Nova publicação"]
+                //page.click("[aria-label=\"Nova publicação\"]");
+
+                System.err.println("testa postar");
+
+                // Upload 1207078.jpg
+                // page.waitForNavigation(new
+                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/style/"),
+                // () ->
+                page.waitForNavigation(() -> {
+                    page.setInputFiles("[data-testid=\"new-post-button\"]", Paths.get("/home/deca/Documentos/instagram/imagem/1090149.jpg"));
+                });
+
+                ib.pausa(page, 3, 5);
+
+                // Click text=Avançar
+                // page.waitForNavigation(new
+                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/details/"),
+                // () ->
+                page.waitForNavigation(() -> {
+                    page.click("text=Avançar");
+                });
+
+                ib.pausa(page, 3, 5);
+
+                // Click [aria-label="Escreva uma legenda..."]
+                page.click("[aria-label=\"Escreva uma legenda...\"]");
+
+                ib.pausa(page, 3, 5);
+
+
+                // Fill [aria-label="Escreva uma legenda..."]
+                page.fill("[aria-label=\"Escreva uma legenda...\"]", "#natureza #amor #coisalinda");
+
+
+                ib.pausa(page, 3, 5);
+
+                // Click text=Compartilhar
+                // page.waitForNavigation(new
+                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
+                page.waitForNavigation(() -> {
+                    page.click("text=Compartilhar");
+                });
+
+
+                page.pause();
+
+
+                // final cod teste
+
+            }
+
         }
 
     }

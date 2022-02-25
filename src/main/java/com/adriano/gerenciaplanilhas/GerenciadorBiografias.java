@@ -1,11 +1,13 @@
-package com.adriano.utilitario;
+package com.adriano.gerenciaplanilhas;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import com.adriano.model.Biografia;
 import com.adriano.model.Nomes;
+import com.adriano.repositotory.BiografiaRepository;
 import com.adriano.repositotory.NomeRepository;
 
 import org.apache.commons.collections4.IteratorUtils;
@@ -22,18 +24,18 @@ import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 
 @RestController
-@RequestMapping("/api/nome/banco")
+@RequestMapping("/api/biografia/banco")
 @AllArgsConstructor
-public class GerenciadorNomes {
+public class GerenciadorBiografias {
 
 
-    private NomeRepository rNome;
+    private BiografiaRepository rBio;
 
     @GetMapping
-    public void salvarNomes() throws IOException {
+    public void salvarBiografia() throws IOException {
 
         @Cleanup
-        FileInputStream file = new FileInputStream("src/main/resources/nomes.xlsx");
+        FileInputStream file = new FileInputStream("src/main/resources/biografias.xlsx");
 
         Workbook workbook = new XSSFWorkbook(file);
         Sheet sheet = workbook.getSheetAt(0);
@@ -47,11 +49,11 @@ public class GerenciadorNomes {
             try {
                 
 
-                Nomes nome = new Nomes();
-                nome.setNome(cells.get(0).getStringCellValue());
-                nome.setGenero(cells.get(1).getStringCellValue());
+                Biografia bio = new Biografia();
+                bio.setBio(cells.get(0).getStringCellValue());
+              
     
-                rNome.save(nome);
+                rBio.save(bio);
 
             } catch (Exception e) {
                 System.out.println("erro " + e.toString());
@@ -59,7 +61,7 @@ public class GerenciadorNomes {
            
         }
 
-        System.out.println("nomes Inseridos");
+        System.out.println("biografia inserida");
 
     }
 

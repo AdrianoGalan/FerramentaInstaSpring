@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PerfilRepository extends JpaRepository<Perfil, Integer> {
     
-    public Perfil getByUsername(String usurname);
+    public Perfil getByUsername(String username);
     public List<Perfil> findByStatus(Status status);
     public List<Perfil> findByStatusId(int idStatus);
     public List<Perfil> findByStatusDIfBlo(int idStatus);
