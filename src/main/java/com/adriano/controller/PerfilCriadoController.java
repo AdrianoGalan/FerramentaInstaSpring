@@ -5,13 +5,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import com.adriano.model.Biografia;
 import com.adriano.model.Nomes;
 import com.adriano.model.PerfilCriado;
-import com.adriano.model.Sobrenomes;
 import com.adriano.repositotory.BiografiaRepository;
 import com.adriano.repositotory.NomeRepository;
 import com.adriano.repositotory.SobreNomeRepository;
+import com.adriano.utilitario.Gerador;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,15 +24,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class PerfilCriadoController {
 
-    
     private final NomeRepository rNome;
     private final SobreNomeRepository rSobrenome;
     private final BiografiaRepository rBiografia;
+    private Gerador gera;
 
-   
-
-
-  
     @GetMapping("/{genero}")
     public PerfilCriado criar(@PathVariable(value = "genero") String genero) {
 
@@ -43,63 +38,19 @@ public class PerfilCriadoController {
         String[] username;
 
         perfil.setNome(nomes.get(gerador.nextInt(nomes.size())).getNome());
-        perfil.setSobrenome(gerarSobrenome());
-        perfil.setDataAniver(gerarData());
+        perfil.setSobrenome(gera.gerarSobrenome());
+        perfil.setDataAniver(gera.gerarData());
         perfil.setDataCriacao(dataAtual());
-        perfil.setBio(gerarBio());
-        perfil.setSenha("Senha"+perfil.getNome());
-       
+        perfil.setBio(gera.geraBio());
+        perfil.setSenha("Senha" + perfil.getNome());
+
         username = perfil.getSobrenome().split(" ");
-        perfil.setUsername(username[1] + perfil.getNome()+username[0] );
+        perfil.setUsername(username[1] + perfil.getNome() + username[0]);
 
         return perfil;
     }
 
-    private String gerarBio() {
 
-        Random gerador = new Random();
-        List<Biografia> bios = rBiografia.findAll();
-
-        if (bios.size() > 0) {
-            String primeiraBio = bios.get(gerador.nextInt(bios.size())).getBio();
-            String segundaBio = bios.get(gerador.nextInt(bios.size())).getBio();
-
-            while (primeiraBio.equals(segundaBio)) {
-                segundaBio = bios.get(gerador.nextInt(bios.size())).getBio();
-            }
-            return primeiraBio + " " + segundaBio;
-        }
-
-        return bios.get(0).getBio();
-
-    }
-
-    private String gerarSobrenome() {
-
-        Random gerador = new Random();
-        List<Sobrenomes> sobrenomes = rSobrenome.findAll();
-
-        String primeiroSobrenome = sobrenomes.get(gerador.nextInt(sobrenomes.size())).getSobrenome();
-        String segundoSobrenome = sobrenomes.get(gerador.nextInt(sobrenomes.size())).getSobrenome();
-
-        while (primeiroSobrenome.equals(segundoSobrenome)) {
-
-            segundoSobrenome = sobrenomes.get(gerador.nextInt(sobrenomes.size())).getSobrenome();
-        }
-
-        return primeiroSobrenome + " " + segundoSobrenome;
-    }
-
-    private String gerarData() {
-
-        Random gerador = new Random();
-
-        int dia = gerador.nextInt(27) + 1;
-        int mes = gerador.nextInt(11) + 1;
-        int ano = gerador.nextInt(20) + 1980;
-
-        return ano + "-" + mes + "-" + dia;
-    }
 
     private String dataAtual() {
 

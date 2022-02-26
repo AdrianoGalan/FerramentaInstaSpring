@@ -208,7 +208,7 @@ public class InstaBot {
 
     }
 
-    public boolean postar(Page page, Perfil perfil) {
+    public boolean postar(Page page, Perfil perfil, String hashtag, String caminhoImagem) {
 
         page.navigate("https://www.instagram.com/" + perfil.getUsername());
 
@@ -216,11 +216,13 @@ public class InstaBot {
 
         try {
 
+            
             FileChooser fileChooser = page.waitForFileChooser(() -> {
                 page.click("[aria-label=\"Nova publicação\"]");
             });
-            fileChooser.setFiles(Paths.get("/home/deca/Documentos/instagram/imagem/1207076.jpg"));
+            fileChooser.setFiles(Paths.get(caminhoImagem));
 
+          
             pausa(page, 3, 5);
 
             // Click text=Avançar
@@ -233,22 +235,33 @@ public class InstaBot {
 
             pausa(page, 3, 5);
 
+           
             // Click [aria-label="Escreva uma legenda..."]
             page.click("[aria-label=\"Escreva uma legenda...\"]");
 
             pausa(page, 3, 5);
 
+           
             // Fill [aria-label="Escreva uma legenda..."]
-            page.fill("[aria-label=\"Escreva uma legenda...\"]", "#natureza #amor #coisalinda");
+            page.fill("[aria-label=\"Escreva uma legenda...\"]", hashtag);
 
             pausa(page, 3, 5);
 
+            System.err.println(page.title());
             // Click text=Compartilhar
             // page.waitForNavigation(new
             // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
             page.waitForNavigation(() -> {
                 page.click("text=Compartilhar");
             });
+
+
+       
+            pausa(page, 3, 5);
+
+            page.navigate("https://www.instagram.com");
+
+            pausa(page, 3, 5);
 
             return true;
 

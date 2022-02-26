@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import com.adriano.model.Categoria;
 import com.adriano.model.Hashtag;
 import com.adriano.repositotory.HashtagRepository;
+import com.adriano.utilitario.Gerador;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +28,8 @@ public class HashtagController {
 
     private final HashtagRepository rHas;
     private final CategoriaController catControl;
+
+    private final Gerador gerador;
 
     @GetMapping
     public List<Hashtag> list() {
@@ -66,23 +69,10 @@ public class HashtagController {
     @GetMapping("/gerar/{categoria}")
     public ResponseEntity<String> gerar(@PathVariable(value = "categoria") int id_categoria) {
 
-        List<Hashtag> has = rHas.byCategoria(id_categoria);
-        String retorno = "";
+        String hashtag = gerador.geraHashtagCategoria(id_categoria);
 
-        if (!has.isEmpty()) {
+        return ResponseEntity.ok(hashtag);
 
-            int tamanho = has.size();
-            Random gerador = new Random();
-
-            retorno = has.get(gerador.nextInt(tamanho)).getNome();
-
-            for (int i = 0; i < 5; i++) {
-
-                retorno = retorno + " " + has.get(gerador.nextInt(tamanho)).getNome();
-
-            }
-        }
-        return ResponseEntity.ok(retorno);
     }
 
 }

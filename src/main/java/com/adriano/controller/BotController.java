@@ -5,10 +5,13 @@ import java.util.List;
 
 import com.adriano.bot.Bot;
 import com.adriano.gerenciaplanilhas.GerenciadorPerfil;
+import com.adriano.model.Categoria;
 import com.adriano.model.Perfil;
 import com.adriano.model.Status;
+import com.adriano.repositotory.CategoriaRepository;
 import com.adriano.repositotory.PerfilRepository;
 import com.adriano.repositotory.StatusRepository;
+import com.adriano.utilitario.Gerador;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +29,8 @@ public class BotController {
     private Bot bot;
     private PerfilRepository rPerfil;
     private StatusRepository rStatus;
+    private CategoriaRepository rCateg;
+    private Gerador gera;
 
     @GetMapping("/verificarcontas/{username}")
     public ResponseEntity<String> verificarContas(@PathVariable(value = "username") String username) {
@@ -57,7 +62,7 @@ public class BotController {
             rPerfil.save(perfil);
         }
 
-        //salva na planilha
+        // salva na planilha
         try {
             gp.salvarPerfilPlanilha();
         } catch (IOException e) {
@@ -67,14 +72,26 @@ public class BotController {
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/teste/{username}")
-    public ResponseEntity<String> teste(@PathVariable(value = "username") String username) {
+    @GetMapping("/postar/{categoria}/{username}")
+    public ResponseEntity<String> postarmagemPerfil(@PathVariable(value = "username") String username,
+            @PathVariable(value = "categoria") String categoria) {
 
         Perfil perfil = rPerfil.getByUsername(username);
         
-        bot.teste(perfil);
+        Categoria cat =rCateg.getByNome(categoria);
+
+        bot.postarImagem(perfil, gera, cat);
 
         return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/teste")
+    public ResponseEntity<String> teste() {
+
+        bot.teste();
+
+        return ResponseEntity.ok("ok");
+
     }
 
 }

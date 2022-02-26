@@ -3,11 +3,14 @@ package com.adriano.bot;
 import java.beans.JavaBean;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
+import com.adriano.model.Categoria;
 import com.adriano.model.Perfil;
 import com.adriano.model.Status;
 import com.adriano.repositotory.PerfilRepository;
+import com.adriano.utilitario.Gerador;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
@@ -52,7 +55,7 @@ public class Bot {
                         .setViewportSize(375, 650)
                         .setHasTouch(true)
                         .setLocale("pt-BR")
-                        .setGeolocation(-23.558934, -46.627823)
+                        .setGeolocation(-23.541329, -46.898358)
                         .setTimezoneId("America/Sao_Paulo"));
 
                 log.info("Inicia Robo");
@@ -102,7 +105,7 @@ public class Bot {
                     .setViewportSize(375, 812)
                     .setHasTouch(true)
                     .setLocale("pt-BR")
-                    .setGeolocation(-23.558934, -46.627823)
+                    .setGeolocation(-23.541329, -46.898358)
                     .setTimezoneId("America/Sao_Paulo"));
 
             log.info("Inicia Robo");
@@ -143,8 +146,6 @@ public class Bot {
 
     public void salvaContext(Perfil perfil) {
 
-        InstaBot ib = new InstaBot();
-
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(false).setSlowMo(200));
@@ -158,7 +159,7 @@ public class Bot {
                     .setViewportSize(375, 812)
                     .setHasTouch(true)
                     .setLocale("pt-BR")
-                    .setGeolocation(-23.558934, -46.627823)
+                    .setGeolocation(-23.541329, -46.898358)
                     .setTimezoneId("America/Sao_Paulo"));
 
             log.info("Inicia Salvar Constext");
@@ -194,11 +195,24 @@ public class Bot {
         }
     }
 
-    public void teste(Perfil perfil) {
+    public void postarImagem(Perfil perfil, Gerador gera, Categoria categoria) {
+
+            System.err.println(categoria.getNome());    
+
+            File pastaImagem = new File("imagem/"+ categoria.getNome());
+            File[] imagens = pastaImagem.listFiles();
+
+            int idImagem = gera.geraInt(0, imagens.length);
+            String caminhoImagem = "imagem/"+ categoria.getNome() + "/" + imagens[idImagem].getName();
+
 
         if (perfil != null) {
 
             File file = new File("context/" + perfil.getUsername() + ".json");
+
+            
+
+
 
             if (!file.isFile()) {
 
@@ -219,73 +233,16 @@ public class Bot {
                         .setViewportSize(375, 650)
                         .setHasTouch(true)
                         .setLocale("pt-BR")
-                        .setGeolocation(-23.558934, -46.627823)
+                        .setGeolocation(-23.541329, -46.898358)
                         .setTimezoneId("America/Sao_Paulo"));
 
                 log.info("Inicia Robo");
-                // Open new page
+                // Open new page -23.558934, -46.627823
                 Page page = context.newPage();
 
                 page.navigate("http://www.instagram.com");
 
-             
-                // começa aki cod de testes
-
-                ib.pausa(page, 3, 5);
-
-                page.navigate("https://www.instagram.com/" + perfil.getUsername());
-
-                ib.pausa(page, 3, 5);
-
-                // Click [data-testid="mobile-nav-logged-in"] [data-testid="user-avatar"]
-                page.click("[data-testid=\"mobile-nav-logged-in\"] [data-testid=\"user-avatar\"]");
-                // assert page.url().equals("https://www.instagram.com/rpereiracastro/");
-
-                ib.pausa(page, 3, 5);
-
-                // Click [aria-label="Nova publicação"]
-                // page.click("[aria-label=\"Nova publicação\"]");
-
-                System.err.println("testa postar");
-
-                FileChooser fileChooser = page.waitForFileChooser(() -> {
-                    page.click("[aria-label=\"Nova publicação\"]");
-                  });
-                  fileChooser.setFiles(Paths.get("/home/deca/Documentos/instagram/imagem/1207076.jpg"));
-
-              
-                ib.pausa(page, 3, 5);
-
-                // Click text=Avançar
-                // page.waitForNavigation(new
-                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/details/"),
-                // () ->
-                page.waitForNavigation(() -> {
-                    page.click("text=Avançar");
-                });
-
-                ib.pausa(page, 3, 5);
-
-                // Click [aria-label="Escreva uma legenda..."]
-                page.click("[aria-label=\"Escreva uma legenda...\"]");
-
-                ib.pausa(page, 3, 5);
-
-                // Fill [aria-label="Escreva uma legenda..."]
-                page.fill("[aria-label=\"Escreva uma legenda...\"]", "#natureza #amor #coisalinda");
-
-                ib.pausa(page, 3, 5);
-
-                // Click text=Compartilhar
-                // page.waitForNavigation(new
-                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
-                page.waitForNavigation(() -> {
-                    page.click("text=Compartilhar");
-                });
-
-                page.pause();
-
-                // final cod teste
+                ib.postar(page, perfil, gera.geraHashtagCategoria(categoria.getId()), caminhoImagem);
 
             }
 
@@ -293,4 +250,9 @@ public class Bot {
 
     }
 
+    public void teste() {
+
+       
+
+    }
 }
