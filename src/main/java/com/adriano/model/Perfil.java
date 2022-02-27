@@ -14,12 +14,12 @@ import lombok.Data;
 @Data
 @Entity
 @NamedNativeQuery(name = "Perfil.findByStatusId", query = "SELECT id,username,senha,nome,sobre_nome,dispositivo,"+
-                         "data_criacao,data_cadastro,data_bloqueio,data_inicio_trabalho,numero_seguidor," +
-                         "numero_seguindo,genero,qualidade,id_email,id_status  FROM perfil  WHERE id_status = ?1 ORDER by numero_seguidor DESC", 
+                         "data_criacao,data_cadastro,data_bloqueio,data_inicio_trabalho,data_ultimo_trabalho,numero_seguidor," +
+                         "numero_seguindo,numero_publicacao,genero,qualidade,id_email,id_status  FROM perfil  WHERE id_status = ?1 ORDER by numero_seguidor DESC", 
 				resultClass = Perfil.class)
 @NamedNativeQuery(name = "Perfil.findByStatusDIfBlo", query = "SELECT id,username,senha,nome,sobre_nome,dispositivo,"+
-                         "data_criacao,data_cadastro,data_bloqueio,data_inicio_trabalho,numero_seguidor," +
-                         "numero_seguindo,genero,qualidade,id_email,id_status  FROM perfil  WHERE id_status != ?1 ORDER by numero_seguidor DESC", 
+                         "data_criacao,data_cadastro,data_bloqueio,data_inicio_trabalho,data_ultimo_trabalho,numero_seguidor," +
+                         "numero_seguindo,numero_publicacao,genero,qualidade,id_email,id_status  FROM perfil  WHERE id_status != ?1 ORDER by numero_seguidor DESC", 
 				resultClass = Perfil.class)
 public class Perfil {
 
@@ -55,10 +55,16 @@ public class Perfil {
     private String dataInicioTrabalho;
 
     @Column
+    private String dataUltimoTrabalho;
+
+    @Column
     private int numeroSeguidor;
 
     @Column
     private int numeroSeguindo;
+
+    @Column
+    private int numeroPublicacao;
 
     @Column
     private String genero;

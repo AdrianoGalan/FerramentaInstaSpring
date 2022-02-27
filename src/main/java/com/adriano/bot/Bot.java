@@ -64,7 +64,11 @@ public class Bot {
 
                 page.navigate("http://www.instagram.com");
 
-                for (int i = 0; i < perfis.size(); i++) {
+                int total = perfis.size();
+
+                log.info("ferificando " + total+ "perfis");
+
+                for (int i = 0; i < total; i++) {
                     Perfil pr = new Perfil();
                     pr = ib.verificaPerfil(page, perfis.get(i).getUsername());
                     ib.assistirStores(page, 1);
@@ -76,7 +80,10 @@ public class Bot {
                     } else if (pr.getId() != -1) {
                         perfis.get(i).setNumeroSeguidor(pr.getNumeroSeguidor());
                         perfis.get(i).setNumeroSeguindo(pr.getNumeroSeguindo());
+                        perfis.get(i).setNumeroPublicacao(pr.getNumeroPublicacao());
                     }
+
+                    log.info("falta " +( total - i ) + "perfis");
                 }
 
             }
@@ -195,7 +202,7 @@ public class Bot {
         }
     }
 
-    public void postarImagem(Perfil perfil, Gerador gera, Categoria categoria) {
+    public boolean postarImagem(Perfil perfil, Gerador gera, Categoria categoria) {
 
             System.err.println(categoria.getNome());    
 
@@ -242,11 +249,13 @@ public class Bot {
 
                 page.navigate("http://www.instagram.com");
 
-                ib.postar(page, perfil, gera.geraHashtagCategoria(categoria.getId()), caminhoImagem);
+              return  ib.postar(page, perfil, gera.geraHashtagCategoria(categoria.getId()), caminhoImagem);
 
             }
 
         }
+
+        return false;
 
     }
 

@@ -77,12 +77,16 @@ public class BotController {
             @PathVariable(value = "categoria") String categoria) {
 
         Perfil perfil = rPerfil.getByUsername(username);
-        
-        Categoria cat =rCateg.getByNome(categoria);
 
-        bot.postarImagem(perfil, gera, cat);
+        Categoria cat = rCateg.getByNome(categoria);
 
-        return ResponseEntity.ok("ok");
+        if (bot.postarImagem(perfil, gera, cat)) {
+
+            return ResponseEntity.ok("ok");
+        }
+
+        return ResponseEntity.ok("erro");
+       
     }
 
     @GetMapping("/teste")

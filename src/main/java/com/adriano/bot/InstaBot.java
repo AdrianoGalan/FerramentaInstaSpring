@@ -173,27 +173,41 @@ public class InstaBot {
         Perfil perfil = new Perfil();
 
         try {
+
             page.navigate("http://www.instagram.com");
 
             this.pausa(page, 1, 3);
-
+            log.info("verifica perfil " + usernanme);
             page.navigate("https://www.instagram.com/" + usernanme);
 
-            this.pausa(page, 1, 3);
+            this.pausa(page, 2, 5);
 
             if (page.title().contains(usernanme)) {
+
+               
 
                 String[] seguidor = page.innerText("text=seguidor").split("\\n");
                 perfil.setNumeroSeguidor(Integer.parseInt(seguidor[0]));
 
+                log.info("seguidores " + seguidor[0]);
+
                 String[] seguindo = page.innerText("text=seguindo").split("\\n");
                 perfil.setNumeroSeguindo(Integer.parseInt(seguindo[0]));
+
+                log.info("seguindo " + seguindo[0]);
+
+                String[] publicacao = page.innerText("text=publica").split("\\n");
+                perfil.setNumeroPublicacao(Integer.parseInt(publicacao[0]));
+
+                log.info("publicação " + publicacao[0]);
 
                 page.navigate("https://www.instagram.com");
                 return perfil;
 
             } else {
 
+                log.info("perfil bloqueado " + usernanme);
+                
                 page.navigate("https://www.instagram.com");
 
                 return null;
