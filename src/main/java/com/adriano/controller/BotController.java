@@ -1,6 +1,8 @@
 package com.adriano.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.adriano.bot.Bot;
@@ -77,7 +79,6 @@ public class BotController {
             @PathVariable(value = "categoria") String categoria) {
 
         Perfil perfil = rPerfil.getByUsername(username);
-
         Categoria cat = rCateg.getByNome(categoria);
 
         if (bot.postarImagem(perfil, gera, cat)) {
@@ -86,13 +87,45 @@ public class BotController {
         }
 
         return ResponseEntity.ok("erro");
-       
+
     }
 
-    @GetMapping("/teste")
-    public ResponseEntity<String> teste() {
+    @GetMapping("/cadastrarGanhar/{username}")
+    public ResponseEntity<String> cadastrarGanharnoInsta(@PathVariable(value = "username") String username) {
 
-        bot.teste();
+        Status status = rStatus.getByStatus("Cadastrado");
+        Perfil perfil = rPerfil.getByUsername(username);
+        Date data = new Date();
+        SimpleDateFormat formatador = new SimpleDateFormat("yyyy-MM-dd");
+
+        perfil = bot.verificaConta(perfil);
+
+        if (perfil.getNumeroPublicacao() >= 4 && perfil.getNumeroSeguidor() >= 15) {
+
+            System.err.println("começa cadastro");
+            if (bot.cadastrarGanhaInsta(perfil)) {
+
+                System.err.println(" salva alteraçoes");
+                perfil.setStatus(status);
+                perfil.setDataCadastro(formatador.format(data));
+
+                this.rPerfil.save(perfil);
+                
+                return ResponseEntity.ok("ok");
+
+            }
+        }
+
+        return ResponseEntity.ok("deu ruim");
+
+    }
+
+    @GetMapping("/teste/{username}")
+    public ResponseEntity<String> teste(@PathVariable(value = "username") String username) {
+
+        Perfil perfil = rPerfil.getByUsername(username);
+
+        bot.teste(perfil);
 
         return ResponseEntity.ok("ok");
 
