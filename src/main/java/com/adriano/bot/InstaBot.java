@@ -83,6 +83,8 @@ public class InstaBot {
 
     public boolean assistirStores(Page page, int tempo) {
 
+        page.navigate("https://www.instagram.com/");
+
         if (!verificaBloqueio(page)) {
 
             log.info("Assistir Stores por " + tempo + " minutos");
@@ -456,9 +458,10 @@ public class InstaBot {
 
     }
 
-    public void realizarTarefa(Page page, Perfil perfil, int numeroAcoes, int tempoEntreTarefas ) {
+    public void realizarTarefa(Page page, Perfil perfil, int numeroAcoes, int tempoEntreTarefas, int qtsAcoesParaStores,
+            int tempoStores) {
 
-        log.info("inicia realização de tarefas");
+        log.info(perfil.getUsername() + " inicia realização de tarefas");
 
         tempoEntreTarefas = tempoEntreTarefas * 1000;
 
@@ -474,14 +477,16 @@ public class InstaBot {
                 page.waitForTimeout(1500);
 
                 // Click a:has-text("Depois")
-            //    page.click("a:has-text(\"Depois\")");
+                // page.click("a:has-text(\"Depois\")");
 
                 page.waitForTimeout(1500);
-               
+
                 page.pause();
 
-                // Select 6514099
-                page.selectOption("select[name=\"contaig\"]", new SelectOption().setLabel(perfil.getUsername()));
+                System.err.println(perfil.getUsername().toLowerCase());
+
+                page.selectOption("select[name=\"contaig\"]",
+                        new SelectOption().setLabel(perfil.getUsername().toLowerCase()));
 
                 page.waitForTimeout(1500);
 
@@ -490,42 +495,127 @@ public class InstaBot {
 
                 page.waitForTimeout(1500);
 
-                for (int i = 0; i < numeroAcoes; i++) {
-
-                    System.err.println(page.title());
+                for (int i = 1; i <= numeroAcoes;) {
 
                     // espera nova tarefa
-                    while (!page.isVisible("text=Seguir Perfil")) {
-                        log.info("procurando nova tarefa");
+                    log.info(perfil.getUsername() + " procurando nova tarefa");
+                    while (!page.isVisible("text=Seguir Perfil") && !page.isVisible("text=Curtir Publicação")) {
 
                         page.waitForTimeout(5000);
                     }
 
-                    if (page.isVisible("text=Seguir Perfil") && !page.isVisible("text=Curtir Publicação")) {
+                    if (page.isVisible("text=Seguir Perfil")) {
 
-                        log.info("tarefa de seguir perfil");
+                        log.info(perfil.getUsername() + " tarefa de seguir perfil");
 
                         Page page1 = page.waitForPopup(() -> {
                             page.click("a:has-text(\"Acessar Perfil\")");
                         });
 
-                        pausa(page1, 1, 2);
-                        // Click button:has-text("Seguir")
-                        page1.click("button:has-text(\"Seguir\")");
-                        pausa(page1, 1, 2);
-                        // Close page
-                        page1.close();
+                        pausa(page, 1, 2);
 
-                        page.waitForTimeout(1000);
+                        if (!verificaBloqueio(page)) {
+                            try {
 
-                        page.click("button:has-text(\"Confirmar Ação\")");
+                                pausa(page1, 1, 2);
+                                // Click button:has-text("Seguir")
+                                page1.click("button:has-text(\"Seguir\")");
+                                pausa(page1, 1, 2);
+                                // Close page
+                                page1.close();
 
-                        log.info( (i + 1) + "tarefa seguir realizada");
+                                page.waitForTimeout(1000);
 
-                        log.info("Tempo par aproxima tarefa " + tempoEntreTarefas/1000 +  " segundos" );
-                        
-                        page.waitForTimeout(tempoEntreTarefas);
+                                page.click("button:has-text(\"Confirmar Ação\")");
 
+                                log.info(perfil.getUsername() + " " + i + " tarefa seguir realizada");
+
+                                log.info(perfil.getUsername() + " Tempo par aproxima tarefa " + tempoEntreTarefas / 1000
+                                        + " segundos");
+
+                                page.waitForTimeout(tempoEntreTarefas);
+
+                                i++;
+                            } catch (Exception e) {
+                                log.error("Erro ao realizar ação " + e);
+                            }
+                        } else {
+
+                            log.info("Perfil bloqueado");
+                            break;
+                        }
+                    }
+
+                    if (page.isVisible("text=Curtir Publicação")) {
+
+                        log.info(perfil.getUsername() + " tarefa de curtir");
+
+                        Page page1 = page.waitForPopup(() -> {
+                            page.click("a:has-text(\"Acessar Publicação\")");
+                        });
+
+                        pausa(page, 1, 2);
+
+                        if (!verificaBloqueio(page)) {
+                            try {
+
+                                pausa(page1, 1, 2);
+
+                                // Click button:has-text("curtir")
+                                page1.click("text=Curtido ");
+
+                                pausa(page1, 1, 2);
+
+                                // Close page
+                                page1.close();
+
+                                page.waitForTimeout(1000);
+
+                                page.click("button:has-text(\"Confirmar Ação\")");
+
+                                log.info(perfil.getUsername() + " " + i + " tarefa curtir realizada");
+
+                                log.info(perfil.getUsername() + " Tempo par aproxima tarefa " + tempoEntreTarefas / 1000
+                                        + " segundos");
+
+                                page.waitForTimeout(tempoEntreTarefas);
+
+                                i++;
+
+                            } catch (Exception e) {
+                                log.error("Erro ao realizar ação " + e);
+                            }
+
+                        } else {
+
+                            log.info("Perfil bloqueado");
+                            break;
+                        }
+
+                    }
+
+                    System.err.println(i % qtsAcoesParaStores);
+                    // Assiste stores
+                    if (i % qtsAcoesParaStores == 0) {
+
+                        // Click text=Pausar Sistema
+                        page.click("text=Pausar Sistema");
+
+                        assistirStores(page, tempoStores);
+
+                        page.navigate("https://www.ganharnoinsta.com/painel/?pagina=sistema");
+
+                        page.waitForTimeout(1500);
+
+                        page.pause();
+
+                        page.selectOption("select[name=\"contaig\"]",
+                                new SelectOption().setLabel(perfil.getUsername().toLowerCase()));
+
+                        page.waitForTimeout(1500);
+
+                        // Click text=Iniciar Sistema
+                        page.click("text=Iniciar Sistema");
 
                     }
 
@@ -534,18 +624,18 @@ public class InstaBot {
                 // Click text=Pausar Sistema
                 page.click("text=Pausar Sistema");
 
+                log.info(perfil.getUsername() + " realizar ações finalizado");
+
                 page.pause();
 
             } catch (Exception e) {
                 log.error("Erro ao realizar tarefa ", e);
             }
-        }else{
+        } else {
 
             log.info("Perfil bloqueado " + perfil.getUsername());
 
         }
-
-       
 
     }
 

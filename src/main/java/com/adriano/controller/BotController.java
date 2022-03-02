@@ -134,7 +134,12 @@ public class BotController {
         // tempo em segundos
         int tempoEntreAcoes = 1;
 
-        bot.realizarTarefa(perfil, qtsAcoes, tempoEntreAcoes);
+        int qtsAcoesParaStores  = 1;
+
+        //tempo em minutos
+        int tempoStores = 1;
+
+        bot.realizarTarefa(perfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores);
 
         return ResponseEntity.ok("ok");
 
@@ -145,7 +150,7 @@ public class BotController {
 
         Perfil perfil = rPerfil.getByUsername(username);
 
-        bot.teste(perfil);
+        bot.realizarTarefa(perfil, 5, 60, 2, 1);
 
         return ResponseEntity.ok("ok");
 

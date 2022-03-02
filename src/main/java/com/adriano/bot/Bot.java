@@ -267,7 +267,7 @@ public class Bot {
         return ib.cadastrarGanhaInsta(perfil);
     }
 
-    public void realizarTarefa(Perfil perfil, int qtsAcoes, int tempoEntreAcoes) {
+    public void realizarTarefa(Perfil perfil, int qtsAcoes, int tempoEntreAcoes, int qtsAcoesParaStores, int tempoStores) {
 
         File file = new File("context/" + perfil.getUsername() + ".json");
 
@@ -296,7 +296,7 @@ public class Bot {
             // Open new page
             Page page = context.newPage();
 
-            ib.realizarTarefa(page, perfil, qtsAcoes, tempoEntreAcoes);
+            ib.realizarTarefa(page, perfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores);
 
         }
 
