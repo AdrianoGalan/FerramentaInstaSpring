@@ -13,6 +13,7 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.FileChooser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.SelectOption;
 
 public class InstaBot {
 
@@ -82,58 +83,70 @@ public class InstaBot {
 
     public boolean assistirStores(Page page, int tempo) {
 
-        log.info("Assistir Stores por " + tempo + " minutos");
+        if (!verificaBloqueio(page)) {
 
-        tempo = tempo * 60000;
-        int aux = 0;
-        String titulo = "";
+            log.info("Assistir Stores por " + tempo + " minutos");
 
-        try {
+            tempo = tempo * 60000;
+            int aux = 0;
+            String titulo = "";
 
-            // assistir stores
-            page.click("div[role=\"button\"]", new Page.ClickOptions()
-                    .setPosition(2, 6));
+            try {
 
-            this.pausa(page, 2, 4);
+                // assistir stores
+                page.click("div[role=\"button\"]", new Page.ClickOptions()
+                        .setPosition(2, 6));
 
-            while (aux < tempo) {
+                this.pausa(page, 2, 4);
 
-                titulo = page.title();
+                while (aux < tempo) {
 
-                if (titulo.contains("Sto")) {
-                    // avançar stores
-                    // Click div[role="button"] >> :nth-match(button, 4)
-                    page.click("div[role=\"button\"] >> :nth-match(button, 4)");
+                    titulo = page.title();
+
+                    if (titulo.contains("Sto")) {
+                        // avançar stores
+                        // Click div[role="button"] >> :nth-match(button, 4)
+                        page.click("div[role=\"button\"] >> :nth-match(button, 4)");
+
+                    }
+                    aux = aux + 10000;
+                    pausa(page, 9, 11);
 
                 }
-                aux = aux + 10000;
-                pausa(page, 9, 11);
 
+                // Click header button
+                page.click("header button");
+
+                return true;
+
+            } catch (Exception e) {
+
+                log.error("Erro ao assistir stores ", e);
+                return false;
             }
-
-            // Click header button
-            page.click("header button");
-
-            return true;
-
-        } catch (Exception e) {
-
-            log.error("Erro ao assistir stores ", e);
-            return false;
         }
+        log.info("Perfil bloqueado: ");
+        return false;
 
     }
 
     public boolean verificaBloqueio(Page page) {
 
-        if (page.title().contains("confirmar que")) {
+        log.info("Verificando bloqueio");
+
+        pausa(page, 2, 3);
+
+        if (page.isVisible("text=Confirme que")) {
+            page.close();
             return true;
         }
 
-        if (page.title().contains("telefone")) {
+        if (page.isVisible("text=telefone")) {
+            page.close();
             return true;
         }
 
+        log.info("Perfil ok");
         return false;
 
     }
@@ -171,113 +184,124 @@ public class InstaBot {
 
     public Perfil verificaPerfil(Page page, String usernanme) {
 
-        Perfil perfil = new Perfil();
+        if (!verificaBloqueio(page)) {
+            Perfil perfil = new Perfil();
 
-        try {
+            try {
 
-            page.navigate("http://www.instagram.com");
+                page.navigate("http://www.instagram.com");
 
-            this.pausa(page, 1, 3);
-            log.info("verifica perfil " + usernanme);
-            page.navigate("https://www.instagram.com/" + usernanme);
+                this.pausa(page, 1, 3);
+                log.info("verifica perfil " + usernanme);
+                page.navigate("https://www.instagram.com/" + usernanme);
 
-            this.pausa(page, 2, 5);
+                this.pausa(page, 2, 5);
 
-            if (page.title().contains(usernanme)) {
+                if (page.title().contains(usernanme)) {
 
-                String[] seguidor = page.innerText("text=seguidor").split("\\n");
-                perfil.setNumeroSeguidor(Integer.parseInt(seguidor[0]));
+                    String[] seguidor = page.innerText("text=seguidor").split("\\n");
+                    perfil.setNumeroSeguidor(Integer.parseInt(seguidor[0]));
 
-                log.info("seguidores " + seguidor[0]);
+                    log.info("seguidores " + seguidor[0]);
 
-                String[] seguindo = page.innerText("text=seguindo").split("\\n");
-                perfil.setNumeroSeguindo(Integer.parseInt(seguindo[0]));
+                    String[] seguindo = page.innerText("text=seguindo").split("\\n");
+                    perfil.setNumeroSeguindo(Integer.parseInt(seguindo[0]));
 
-                log.info("seguindo " + seguindo[0]);
+                    log.info("seguindo " + seguindo[0]);
 
-                String[] publicacao = page.innerText("text=publica").split("\\n");
-                perfil.setNumeroPublicacao(Integer.parseInt(publicacao[0]));
+                    String[] publicacao = page.innerText("text=publica").split("\\n");
+                    perfil.setNumeroPublicacao(Integer.parseInt(publicacao[0]));
 
-                log.info("publicação " + publicacao[0]);
+                    log.info("publicação " + publicacao[0]);
 
+                    page.navigate("https://www.instagram.com");
+                    return perfil;
+
+                } else {
+
+                    log.info("perfil bloqueado " + usernanme);
+
+                    page.navigate("https://www.instagram.com");
+
+                    return null;
+                }
+
+            } catch (Exception e) {
+                log.error("Erro ao verificar ", e);
+                perfil.setId(-1);
                 page.navigate("https://www.instagram.com");
                 return perfil;
-
-            } else {
-
-                log.info("perfil bloqueado " + usernanme);
-
-                page.navigate("https://www.instagram.com");
-
-                return null;
             }
-
-        } catch (Exception e) {
-            log.error("Erro ao verificar ", e);
-            perfil.setId(-1);
-            page.navigate("https://www.instagram.com");
-            return perfil;
         }
+
+        log.info("perfil bloqueado");
+        return null;
 
     }
 
     public boolean postar(Page page, Perfil perfil, String hashtag, String caminhoImagem) {
 
-        page.navigate("https://www.instagram.com/" + perfil.getUsername());
+        if (!verificaBloqueio(page)) {
 
-        pausa(page, 3, 5);
-
-        try {
-
-            FileChooser fileChooser = page.waitForFileChooser(() -> {
-                page.click("[aria-label=\"Nova publicação\"]");
-            });
-            fileChooser.setFiles(Paths.get(caminhoImagem));
+            page.navigate("https://www.instagram.com/" + perfil.getUsername());
 
             pausa(page, 3, 5);
 
-            // Click text=Avançar
-            // page.waitForNavigation(new
-            // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/details/"),
-            // () ->
-            page.waitForNavigation(() -> {
-                page.click("text=Avançar");
-            });
+            try {
 
-            pausa(page, 3, 5);
+                FileChooser fileChooser = page.waitForFileChooser(() -> {
+                    page.click("[aria-label=\"Nova publicação\"]");
+                });
+                fileChooser.setFiles(Paths.get(caminhoImagem));
 
-            // Click [aria-label="Escreva uma legenda..."]
-            page.click("[aria-label=\"Escreva uma legenda...\"]");
+                pausa(page, 3, 5);
 
-            pausa(page, 3, 5);
+                // Click text=Avançar
+                // page.waitForNavigation(new
+                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/create/details/"),
+                // () ->
+                page.waitForNavigation(() -> {
+                    page.click("text=Avançar");
+                });
 
-            // Fill [aria-label="Escreva uma legenda..."]
-            page.fill("[aria-label=\"Escreva uma legenda...\"]", hashtag);
+                pausa(page, 3, 5);
 
-            pausa(page, 3, 5);
+                // Click [aria-label="Escreva uma legenda..."]
+                page.click("[aria-label=\"Escreva uma legenda...\"]");
 
-            System.err.println(page.title());
-            // Click text=Compartilhar
-            // page.waitForNavigation(new
-            // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
-            page.waitForNavigation(() -> {
-                page.click("text=Compartilhar");
-            });
+                pausa(page, 3, 5);
 
-            pausa(page, 3, 5);
+                // Fill [aria-label="Escreva uma legenda..."]
+                page.fill("[aria-label=\"Escreva uma legenda...\"]", hashtag);
 
-            page.navigate("https://www.instagram.com");
+                pausa(page, 3, 5);
 
-            pausa(page, 3, 5);
+                System.err.println(page.title());
+                // Click text=Compartilhar
+                // page.waitForNavigation(new
+                // Page.WaitForNavigationOptions().setUrl("https://www.instagram.com/"), () ->
+                page.waitForNavigation(() -> {
+                    page.click("text=Compartilhar");
+                });
 
-            return true;
+                pausa(page, 3, 5);
 
-        } catch (Exception e) {
-            log.error("Erro ao verificar ", e);
-            page.navigate("https://www.instagram.com");
+                page.navigate("https://www.instagram.com");
 
-            return false;
+                pausa(page, 3, 5);
+
+                return true;
+
+            } catch (Exception e) {
+                log.error("Erro ao verificar ", e);
+                page.navigate("https://www.instagram.com");
+
+                return false;
+            }
         }
+
+        log.info("perfil bloqueado");
+        return false;
     }
 
     public boolean cadastrarGanhaInsta(Perfil perfil) {
@@ -307,122 +331,221 @@ public class InstaBot {
                 // Open new page
                 Page page = context.newPage();
 
-                page.navigate("https://www.ganharnoinsta.com/painel/?pagina=adicionar_conta");
+                page.navigate("https://www.instagram.com");
 
-                page.waitForTimeout(3000);
-                // Click a:has-text("Depois")
-                page.click("a:has-text(\"Depois\")");
+                if (!verificaBloqueio(page)) {
 
-                page.waitForTimeout(1000);
-                page.click(
-                        "text=Adicionar Conta Informações Importantes:Ao adicionar uma nova conta, ela ficará  >> img");
-                // Click text=Próxima Etapa
-                page.waitForTimeout(1000);
-                page.click("text=Próxima Etapa");
+                    page.navigate("https://www.ganharnoinsta.com/painel/?pagina=adicionar_conta");
 
-                // Click [placeholder="@nomedeusuario"]
-                page.click("[placeholder=\"@nomedeusuario\"]");
+                    page.waitForTimeout(3000);
+                    // Click a:has-text("Depois")
+                    page.click("a:has-text(\"Depois\")");
 
-                page.waitForTimeout(1000);
-                log.info("Adiciona usuario " + perfil.getUsername());
-
-                // Fill [placeholder="@nomedeusuario"]
-                page.fill("[placeholder=\"@nomedeusuario\"]", perfil.getUsername());
-
-                if (perfil.getGenero().equalsIgnoreCase("M")) {
-
-                    log.info("Seleciona genero masculino");
-                    page.selectOption("select[name=\"sexo\"]", "1");
-
-                } else {
-
-                    log.info("Seleciona genero Faminino");
-                    page.selectOption("select[name=\"sexo\"]", "2");
-                }
-
-                page.waitForTimeout(1000);
-                page.waitForNavigation(() -> {
+                    page.waitForTimeout(1000);
+                    page.click(
+                            "text=Adicionar Conta Informações Importantes:Ao adicionar uma nova conta, ela ficará  >> img");
+                    // Click text=Próxima Etapa
+                    page.waitForTimeout(1000);
                     page.click("text=Próxima Etapa");
-                });
 
-                page.waitForTimeout(1000);
-                cod = page.inputValue("input[type=\"text\"]");
+                    // Click [placeholder="@nomedeusuario"]
+                    page.click("[placeholder=\"@nomedeusuario\"]");
 
-                log.info(" Codigo copiado: " + cod);
+                    page.waitForTimeout(1000);
+                    log.info("Adiciona usuario " + perfil.getUsername());
 
-                // Open new page
-                Page page1 = context.newPage();
+                    // Fill [placeholder="@nomedeusuario"]
+                    page.fill("[placeholder=\"@nomedeusuario\"]", perfil.getUsername());
 
-                // Go to https://www.instagram.com/
-                page1.navigate("https://www.instagram.com/" + perfil.getUsername());
+                    if (perfil.getGenero().equalsIgnoreCase("M")) {
 
-                if(this.verificaBloqueio(page1)){
-                    return false;
+                        log.info("Seleciona genero masculino");
+                        page.selectOption("select[name=\"sexo\"]", "1");
+
+                    } else {
+
+                        log.info("Seleciona genero Faminino");
+                        page.selectOption("select[name=\"sexo\"]", "2");
+                    }
+
+                    page.waitForTimeout(1000);
+                    page.waitForNavigation(() -> {
+                        page.click("text=Próxima Etapa");
+                    });
+
+                    page.waitForTimeout(1000);
+                    cod = page.inputValue("input[type=\"text\"]");
+
+                    log.info(" Codigo copiado: " + cod);
+
+                    // Open new page
+                    Page page1 = context.newPage();
+
+                    // Go to https://www.instagram.com/
+                    page1.navigate("https://www.instagram.com/" + perfil.getUsername());
+
+                    if (this.verificaBloqueio(page1)) {
+                        return false;
+                    }
+
+                    pausa(page1, 2, 3);
+                    // Click text=Editar perfil
+                    page1.click("text=Editar perfil");
+                    // assert page1.url().equals("https://www.instagram.com/accounts/edit/");
+
+                    pausa(page1, 2, 3);
+
+                    // Click text=luta e gloria sempre em frente
+                    bio = page1.inputValue("textarea");
+
+                    log.info("Biografica compiada");
+
+                    pausa(page1, 2, 3);
+                    // Fill text=luta e gloria sempre em frente
+                    page1.fill("textarea", cod);
+
+                    pausa(page1, 2, 3);
+                    // Click text=Enviar
+                    page1.click("text=Enviar");
+
+                    pausa(page1, 2, 3);
+
+                    page1.navigate("https://www.instagram.com/");
+
+                    page.waitForTimeout(1000);
+                    page.waitForNavigation(() -> {
+                        page.click("button:has-text(\"Validar Conta\")");
+                    });
+
+                    page.waitForTimeout(1000);
+                    // Click span img[alt="homepage"]
+                    page.click("span img[alt=\"homepage\"]");
+                    // assert page.url().equals("https://www.ganharnoinsta.com/painel/");
+
+                    page.waitForTimeout(3000);
+
+                    page1.navigate("https://www.instagram.com/" + perfil.getUsername());
+
+                    page.waitForTimeout(3000);
+                    // Click text=Editar perfil
+                    page1.click("text=Editar perfil");
+                    // assert page1.url().equals("https://www.instagram.com/accounts/edit/");
+
+                    page.waitForTimeout(3000);
+                    // Click text=luta e gloria sempre em frente da37f1
+                    page1.click("textarea");
+
+                    page.waitForTimeout(3000);
+                    // Fill text=luta e gloria sempre em frente da37f1
+                    page1.fill("textarea", bio);
+
+                    page.waitForTimeout(3000);
+                    // Click text=Enviar
+                    page1.click("text=Enviar");
+
+                    // Go to https://www.instagram.com/
+                    page1.navigate("https://www.instagram.com/");
+                    return true;
                 }
-
-                pausa(page1, 2, 3);
-                // Click text=Editar perfil
-                page1.click("text=Editar perfil");
-                // assert page1.url().equals("https://www.instagram.com/accounts/edit/");
-
-                pausa(page1, 2, 3);
-
-                // Click text=luta e gloria sempre em frente
-                bio = page1.inputValue("textarea");
-
-                log.info("Biografica compiada");
-
-                pausa(page1, 2, 3);
-                // Fill text=luta e gloria sempre em frente
-                page1.fill("textarea", cod);
-
-                pausa(page1, 2, 3);
-                // Click text=Enviar
-                page1.click("text=Enviar");
-
-                pausa(page1, 2, 3);
-
-                page1.navigate("https://www.instagram.com/");
-
-                page.waitForTimeout(1000);
-                page.waitForNavigation(() -> {
-                    page.click("button:has-text(\"Validar Conta\")");
-                });
-
-                page.waitForTimeout(1000);
-                // Click span img[alt="homepage"]
-                page.click("span img[alt=\"homepage\"]");
-                // assert page.url().equals("https://www.ganharnoinsta.com/painel/");
-
-                page.waitForTimeout(3000);
-
-                page1.navigate("https://www.instagram.com/" + perfil.getUsername());
-
-                page.waitForTimeout(3000);
-                // Click text=Editar perfil
-                page1.click("text=Editar perfil");
-                // assert page1.url().equals("https://www.instagram.com/accounts/edit/");
-
-                page.waitForTimeout(3000);
-                // Click text=luta e gloria sempre em frente da37f1
-                page1.click("textarea");
-
-                page.waitForTimeout(3000);
-                // Fill text=luta e gloria sempre em frente da37f1
-                page1.fill("textarea", bio);
-
-                page.waitForTimeout(3000);
-                // Click text=Enviar
-                page1.click("text=Enviar");
-
-                // Go to https://www.instagram.com/
-                page1.navigate("https://www.instagram.com/");
-                return true;
+                return false;
             }
         } catch (Exception e) {
             log.error("Erro ao cadastrar", e);
             return false;
         }
+
+    }
+
+    public void realizarTarefa(Page page, Perfil perfil, int numeroAcoes, int tempoEntreTarefas ) {
+
+        log.info("inicia realização de tarefas");
+
+        tempoEntreTarefas = tempoEntreTarefas * 1000;
+
+        page.navigate("https://www.instagram.com");
+
+        if (!verificaBloqueio(page)) {
+
+            try {
+
+                // Go to https://www.ganharnoinsta.com/painel/?pagina=sistema
+                page.navigate("https://www.ganharnoinsta.com/painel/?pagina=sistema");
+
+                page.waitForTimeout(1500);
+
+                // Click a:has-text("Depois")
+            //    page.click("a:has-text(\"Depois\")");
+
+                page.waitForTimeout(1500);
+               
+                page.pause();
+
+                // Select 6514099
+                page.selectOption("select[name=\"contaig\"]", new SelectOption().setLabel(perfil.getUsername()));
+
+                page.waitForTimeout(1500);
+
+                // Click text=Iniciar Sistema
+                page.click("text=Iniciar Sistema");
+
+                page.waitForTimeout(1500);
+
+                for (int i = 0; i < numeroAcoes; i++) {
+
+                    System.err.println(page.title());
+
+                    // espera nova tarefa
+                    while (!page.isVisible("text=Seguir Perfil")) {
+                        log.info("procurando nova tarefa");
+
+                        page.waitForTimeout(5000);
+                    }
+
+                    if (page.isVisible("text=Seguir Perfil") && !page.isVisible("text=Curtir Publicação")) {
+
+                        log.info("tarefa de seguir perfil");
+
+                        Page page1 = page.waitForPopup(() -> {
+                            page.click("a:has-text(\"Acessar Perfil\")");
+                        });
+
+                        pausa(page1, 1, 2);
+                        // Click button:has-text("Seguir")
+                        page1.click("button:has-text(\"Seguir\")");
+                        pausa(page1, 1, 2);
+                        // Close page
+                        page1.close();
+
+                        page.waitForTimeout(1000);
+
+                        page.click("button:has-text(\"Confirmar Ação\")");
+
+                        log.info( (i + 1) + "tarefa seguir realizada");
+
+                        log.info("Tempo par aproxima tarefa " + tempoEntreTarefas/1000 +  " segundos" );
+                        
+                        page.waitForTimeout(tempoEntreTarefas);
+
+
+                    }
+
+                }
+
+                // Click text=Pausar Sistema
+                page.click("text=Pausar Sistema");
+
+                page.pause();
+
+            } catch (Exception e) {
+                log.error("Erro ao realizar tarefa ", e);
+            }
+        }else{
+
+            log.info("Perfil bloqueado " + perfil.getUsername());
+
+        }
+
+       
 
     }
 

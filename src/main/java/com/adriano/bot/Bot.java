@@ -123,20 +123,26 @@ public class Bot {
                     .setGeolocation(Constantes.s, Constantes.w)
                     .setTimezoneId("America/Sao_Paulo"));
 
-            log.info("Inicia Robo");
+            log.info("Inicia Verificação da conta");
             // Open new page
             Page page = context.newPage();
 
             page.navigate("http://www.instagram.com");
 
-            pr = ib.verificaPerfil(page, perfil.getUsername());
+            if (!ib.verificaBloqueio(page)) {
 
-            perfil.setNumeroSeguidor(pr.getNumeroSeguidor());
-            perfil.setNumeroSeguindo(pr.getNumeroSeguindo());
-            perfil.setNumeroPublicacao(pr.getNumeroPublicacao());
+                pr = ib.verificaPerfil(page, perfil.getUsername());
+
+                perfil.setNumeroSeguidor(pr.getNumeroSeguidor());
+                perfil.setNumeroSeguindo(pr.getNumeroSeguindo());
+                perfil.setNumeroPublicacao(pr.getNumeroPublicacao());
+
+                return perfil;
+
+            }
+            log.info("conta bloqueada");
+            return null;
         }
-
-        return perfil;
 
     }
 
@@ -164,31 +170,36 @@ public class Bot {
 
             page.navigate("https://www.instagram.com");
 
-            page.waitForTimeout(3000);
-            // Click text=Entrar
-            page.click("text=Entrar");
+            if (!ib.verificaBloqueio(page)) {
 
-            page.waitForTimeout(5000);
+                page.waitForTimeout(3000);
+                // Click text=Entrar
+                page.click("text=Entrar");
 
-            if (page.title().equalsIgnoreCase("Instagram")) {
-                log.info("inicia login");
-                if (ib.fazerLogin(page, perfil)) {
+                page.waitForTimeout(5000);
 
-                    page.waitForTimeout(500);
+                if (page.title().equalsIgnoreCase("Instagram")) {
+                    log.info("inicia login");
+                    if (ib.fazerLogin(page, perfil)) {
 
-                    context.storageState(new BrowserContext.StorageStateOptions()
-                            .setPath(Paths.get("context/" + perfil.getUsername() + ".json")));
+                        page.waitForTimeout(500);
 
-                    page.waitForTimeout(500);
+                        context.storageState(new BrowserContext.StorageStateOptions()
+                                .setPath(Paths.get("context/" + perfil.getUsername() + ".json")));
 
-                    log.info("Assiste Stores");
-                    ib.assistirStores(page, 1);
-                    page.close();
+                        page.waitForTimeout(500);
 
+                        log.info("Assiste Stores");
+                        ib.assistirStores(page, 1);
+                        page.close();
+
+                    }
                 }
-            }
 
+            }
         }
+        log.info("Perfil bloqueado");
+
     }
 
     public boolean postarImagem(Perfil perfil, Gerador gera, Categoria categoria) {
@@ -256,6 +267,41 @@ public class Bot {
         return ib.cadastrarGanhaInsta(perfil);
     }
 
+    public void realizarTarefa(Perfil perfil, int qtsAcoes, int tempoEntreAcoes) {
+
+        File file = new File("context/" + perfil.getUsername() + ".json");
+
+        if (!file.isFile()) {
+
+            this.salvaContext(perfil);
+
+        }
+
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                    .setHeadless(false).setSlowMo(500));
+
+            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
+                    .setStorageStatePath(
+                            Paths.get("context/" + perfil.getUsername() + ".json"))
+                    .setUserAgent(
+                            "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Mobile/15E148 Safari/604.1")
+                    .setIsMobile(true)
+                    .setViewportSize(375, 650)
+                    .setHasTouch(true)
+                    .setLocale("pt-BR")
+                    .setGeolocation(Constantes.s, Constantes.w)
+                    .setTimezoneId("America/Sao_Paulo"));
+
+            // Open new page
+            Page page = context.newPage();
+
+            ib.realizarTarefa(page, perfil, qtsAcoes, tempoEntreAcoes);
+
+        }
+
+    }
+
     public void teste(Perfil perfil) {
 
         File file = new File("context/" + perfil.getUsername() + ".json");
@@ -282,15 +328,12 @@ public class Bot {
                     .setGeolocation(Constantes.s, Constantes.w)
                     .setTimezoneId("America/Sao_Paulo"));
 
-            
-
-            
             // Open new page
             Page page = context.newPage();
 
-            page.navigate("https://www.instagram.com");
+          //  ib.realizarTarefa(page, perfil);
 
-           page.pause();
+            page.pause();
 
         }
 

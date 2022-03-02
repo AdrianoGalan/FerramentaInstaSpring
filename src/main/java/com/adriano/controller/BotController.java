@@ -15,6 +15,7 @@ import com.adriano.repositotory.PerfilRepository;
 import com.adriano.repositotory.StatusRepository;
 import com.adriano.utilitario.Gerador;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,23 +101,42 @@ public class BotController {
 
         perfil = bot.verificaConta(perfil);
 
-        if (perfil.getNumeroPublicacao() >= 4 && perfil.getNumeroSeguidor() >= 15) {
+        if (perfil != null && perfil.getNumeroPublicacao() >= 4 && perfil.getNumeroSeguidor() >= 15) {
 
             System.err.println("começa cadastro");
             if (bot.cadastrarGanhaInsta(perfil)) {
 
-                System.err.println(" salva alteraçoes");
                 perfil.setStatus(status);
                 perfil.setDataCadastro(formatador.format(data));
 
                 this.rPerfil.save(perfil);
-                
+
                 return ResponseEntity.ok("ok");
 
             }
         }
 
-        return ResponseEntity.ok("deu ruim");
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Erro ao Cadastrar");
+
+    }
+
+
+    @GetMapping("/realizaracoes/{username}")
+    public ResponseEntity<String> realizarAcoes(@PathVariable(value = "username") String username) {
+
+        Perfil perfil = rPerfil.getByUsername(username);
+
+        
+        int qtsAcoes = 1;
+
+        // tempo em segundos
+        int tempoEntreAcoes = 1;
+
+        bot.realizarTarefa(perfil, qtsAcoes, tempoEntreAcoes);
+
+        return ResponseEntity.ok("ok");
 
     }
 
