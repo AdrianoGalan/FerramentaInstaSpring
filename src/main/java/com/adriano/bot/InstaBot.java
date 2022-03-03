@@ -458,7 +458,7 @@ public class InstaBot {
 
     }
 
-    public void realizarTarefa(Page page, Perfil perfil, int numeroAcoes, int tempoEntreTarefas, int qtsAcoesParaStores,
+    public boolean realizarTarefa(Page page, Perfil perfil, int numeroAcoes, int tempoEntreTarefas, int qtsAcoesParaStores,
             int tempoStores) {
 
         log.info(perfil.getUsername() + " inicia realização de tarefas");
@@ -481,10 +481,6 @@ public class InstaBot {
 
                 page.waitForTimeout(1500);
 
-                page.pause();
-
-                System.err.println(perfil.getUsername().toLowerCase());
-
                 page.selectOption("select[name=\"contaig\"]",
                         new SelectOption().setLabel(perfil.getUsername().toLowerCase()));
 
@@ -499,6 +495,7 @@ public class InstaBot {
 
                     // espera nova tarefa
                     log.info(perfil.getUsername() + " procurando nova tarefa");
+                    
                     while (!page.isVisible("text=Seguir Perfil") && !page.isVisible("text=Curtir Publicação")) {
 
                         page.waitForTimeout(5000);
@@ -542,7 +539,8 @@ public class InstaBot {
                         } else {
 
                             log.info("Perfil bloqueado");
-                            break;
+                            return false;
+                           
                         }
                     }
 
@@ -561,8 +559,10 @@ public class InstaBot {
 
                                 pausa(page1, 1, 2);
 
-                                // Click button:has-text("curtir")
-                                page1.click("text=Curtido ");
+                                page1.pause();
+
+                                // Click button:has-text("curtir") Curtir
+                                page1.click("[aria-label='Curtir']");
 
                                 pausa(page1, 1, 2);
 
@@ -589,13 +589,12 @@ public class InstaBot {
                         } else {
 
                             log.info("Perfil bloqueado");
-                            break;
+                            return false;
                         }
 
                     }
 
-                    System.err.println(i % qtsAcoesParaStores);
-                    // Assiste stores
+                     // Assiste stores
                     if (i % qtsAcoesParaStores == 0) {
 
                         // Click text=Pausar Sistema
@@ -607,7 +606,6 @@ public class InstaBot {
 
                         page.waitForTimeout(1500);
 
-                        page.pause();
 
                         page.selectOption("select[name=\"contaig\"]",
                                 new SelectOption().setLabel(perfil.getUsername().toLowerCase()));
@@ -624,18 +622,25 @@ public class InstaBot {
                 // Click text=Pausar Sistema
                 page.click("text=Pausar Sistema");
 
+                page.close();
+
                 log.info(perfil.getUsername() + " realizar ações finalizado");
 
-                page.pause();
 
+                return true;
+
+               
             } catch (Exception e) {
                 log.error("Erro ao realizar tarefa ", e);
             }
         } else {
 
             log.info("Perfil bloqueado " + perfil.getUsername());
+            return false;
 
         }
+
+        return false;
 
     }
 

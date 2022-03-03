@@ -122,24 +122,17 @@ public class BotController {
 
     }
 
-
-    @GetMapping("/realizaracoes/{username}")
-    public ResponseEntity<String> realizarAcoes(@PathVariable(value = "username") String username) {
+    @GetMapping("/realizaracoes/{username}/{qtsAcoes}/{tempoEntreAcoes}/{qtsAcoesParaStores}/{tempoStores}")
+    public ResponseEntity<String> realizarAcoes(@PathVariable(value = "username") String username,
+            @PathVariable(value = "qtsAcoes") int qtsAcoes,
+            @PathVariable(value = "tempoEntreAcoes") int tempoEntreAcoes,
+            @PathVariable(value = "qtsAcoesParaStores") int qtsAcoesParaStores,
+            @PathVariable(value = "tempoStores") int tempoStores) {
 
         Perfil perfil = rPerfil.getByUsername(username);
 
-        
-        int qtsAcoes = 1;
-
-        // tempo em segundos
-        int tempoEntreAcoes = 1;
-
-        int qtsAcoesParaStores  = 1;
-
-        //tempo em minutos
-        int tempoStores = 1;
-
-        bot.realizarTarefa(perfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores);
+       
+        bot.realizarTarefa(perfil, rPerfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores);
 
         return ResponseEntity.ok("ok");
 
@@ -150,7 +143,7 @@ public class BotController {
 
         Perfil perfil = rPerfil.getByUsername(username);
 
-        bot.realizarTarefa(perfil, 5, 60, 2, 1);
+        bot.realizarTarefa(perfil,rPerfil, 6, 60, 3, 1);
 
         return ResponseEntity.ok("ok");
 

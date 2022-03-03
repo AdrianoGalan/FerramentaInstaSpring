@@ -2,10 +2,14 @@ package com.adriano.bot;
 
 import java.beans.JavaBean;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import com.adriano.gerenciaplanilhas.GerenciadorPerfil;
 import com.adriano.model.Categoria;
 import com.adriano.model.Perfil;
 import com.adriano.model.Status;
@@ -267,7 +271,7 @@ public class Bot {
         return ib.cadastrarGanhaInsta(perfil);
     }
 
-    public void realizarTarefa(Perfil perfil, int qtsAcoes, int tempoEntreAcoes, int qtsAcoesParaStores, int tempoStores) {
+    public void realizarTarefa(Perfil perfil, PerfilRepository rPerfil, int qtsAcoes, int tempoEntreAcoes, int qtsAcoesParaStores, int tempoStores) {
 
         File file = new File("context/" + perfil.getUsername() + ".json");
 
@@ -296,7 +300,22 @@ public class Bot {
             // Open new page
             Page page = context.newPage();
 
-            ib.realizarTarefa(page, perfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores);
+            if(ib.realizarTarefa(page, perfil, qtsAcoes, tempoEntreAcoes, qtsAcoesParaStores, tempoStores)){
+
+                Date data = new Date();
+                SimpleDateFormat formatador = new SimpleDateFormat("yyyy-MM-dd");
+                perfil.setDataUltimoTrabalho(formatador.format(data));
+
+                GerenciadorPerfil gp = new GerenciadorPerfil(rPerfil);
+
+                rPerfil.save(perfil);
+                try {
+                    gp.salvarPerfilPlanilha();
+
+                } catch (IOException e) {
+                   log.error("Erro ao salvar planilha", e);
+                }
+            }
 
         }
 

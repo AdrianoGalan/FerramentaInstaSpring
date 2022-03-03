@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -24,6 +27,8 @@ import lombok.AllArgsConstructor;
 public class GerenciadorPerfil {
 
     private PerfilRepository rPerfil;
+
+    private static Logger log = LoggerFactory.getLogger(GerenciadorPerfil.class);
 
     @GetMapping("/toplanilha")
     public void salvarPerfilPlanilha() throws IOException {
@@ -34,7 +39,7 @@ public class GerenciadorPerfil {
         Sheet sheet = wb.createSheet("perfil");
 
         for (int i = 0; i < perfils.size(); i++) {
-           
+
             // Create a row and put some cells in it. Rows are 0 based.
             Row row = sheet.createRow(i);
 
@@ -48,19 +53,20 @@ public class GerenciadorPerfil {
             row.createCell(6).setCellValue(perfils.get(i).getDataCadastro());
             row.createCell(7).setCellValue(perfils.get(i).getDataBloqueio());
             row.createCell(8).setCellValue(perfils.get(i).getDataInicioTrabalho());
-            row.createCell(9).setCellValue(perfils.get(i).getNumeroSeguidor());
-            row.createCell(10).setCellValue(perfils.get(i).getNumeroSeguindo());
-            row.createCell(11).setCellValue(perfils.get(i).getGenero());
-            row.createCell(12).setCellValue(perfils.get(i).getQualidade());
-            row.createCell(13).setCellValue(perfils.get(i).getEmail().getEmail());
-            row.createCell(14).setCellValue(perfils.get(i).getStatus().getStatus());
-            
+            row.createCell(9).setCellValue(perfils.get(i).getDataUltimoTrabalho());
+            row.createCell(10).setCellValue(perfils.get(i).getNumeroSeguidor());
+            row.createCell(11).setCellValue(perfils.get(i).getNumeroSeguindo());
+            row.createCell(12).setCellValue(perfils.get(i).getGenero());
+            row.createCell(13).setCellValue(perfils.get(i).getQualidade());
+            row.createCell(14).setCellValue(perfils.get(i).getEmail().getEmail());
+            row.createCell(15).setCellValue(perfils.get(i).getStatus().getStatus());
 
         }
 
         // Write the output to a file
         try (OutputStream fileOut = new FileOutputStream("src/main/resources/perfils.xlsx")) {
             wb.write(fileOut);
+            log.info("Salvo na planilha");
         }
 
     }
